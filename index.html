@@ -62,6 +62,49 @@
             CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, ComposedChart 
         } = window.Recharts || {};
 
+        // --- CONSTANTS ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbwGH9wsueZV2np8T7JA8xqBpEVN1Y1qIF-4WtOpPjlV3-07x3F8bdUIawWwxpVcX7Wx/exec";
+        const COLORS = {
+            year2024: "#4169E1", year2024Light: "#93c5fd",
+            year2025: "#9333EA", year2025Light: "#d8b4fe",
+            positive: "#10b981", negative: "#ef4444", grid: "#e2e8f0"
+        };
+        const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+        // Exchange Rates (Mock) - Base is MXN
+        const EXCHANGE_RATES = {
+            MXN: 1,
+            USD: 20.50,
+            EUR: 21.50
+        };
+
+        // --- UTILS ---
+        const formatCurrency = (valInMxn, currency = 'MXN', lang = 'es') => {
+            let locale = 'es-MX';
+            if (lang === 'fr') locale = 'fr-FR';
+            if (lang === 'en') locale = 'en-US';
+
+            // Convert Value
+            const rate = EXCHANGE_RATES[currency] || 1;
+            const convertedVal = valInMxn / rate;
+
+            return new Intl.NumberFormat(locale, { style: 'currency', currency: currency }).format(convertedVal);
+        };
+
+        const formatNumber = (val, lang = 'es') => {
+            let locale = 'es-MX';
+            if (lang === 'fr') locale = 'fr-FR';
+            if (lang === 'en') locale = 'en-US';
+            return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(val);
+        };
+        const parseDate = (dateStr) => {
+            if (!dateStr) return new Date();
+            let s = String(dateStr); if (s.includes('T')) s = s.split('T')[0];
+            const parts = s.split('-');
+            if (parts.length === 3) return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            return new Date(dateStr);
+        };
+
         // --- TRANSLATIONS ---
         const TRANSLATIONS = {
             es: {
@@ -69,16 +112,22 @@
                 subtitle: "Análisis de venta y márgenes 2024 - 2025",
                 footer: "SSC GOURMET DISTRIBUTION",
                 sourceInfo: "Información combinada de Odoo y Apsheet",
+                languageSelection: "Selección de Idioma",
+                currencySelection: "Selección de Moneda",
+                visibleCurrency: "Moneda visible",
+                exchangeRateUsed: "Tasa de cambio",
                 tabs: {
                     dashboard: "Dashboard General",
                     growth: "Crecimiento General",
                     margin: "Margen & Rentabilidad",
+                    margin_detail: "Análisis de Margen (Detalle)",
                     customers: "Análisis por Cliente"
                 },
                 tabDescriptions: {
                     dashboard: "Vista general de KPIs principales y rendimiento mensual",
                     growth: "Comparativa de crecimiento en ventas y volumen 2024 vs 2025",
                     margin: "Análisis de rentabilidad, evolución de costos y márgenes",
+                    margin_detail: "Detalle profundo de márgenes cargado desde reportes externos",
                     customers: "Detalle de facturación y beneficio por cliente y sucursal"
                 },
                 kpis: {
@@ -155,16 +204,22 @@
                 subtitle: "Analyse des ventes et des marges 2024 - 2025",
                 footer: "SSC GOURMET DISTRIBUTION",
                 sourceInfo: "Informations combinées d'Odoo et Apsheet",
+                languageSelection: "Sélection de la Langue",
+                currencySelection: "Sélection de la Devise",
+                visibleCurrency: "Devise visible",
+                exchangeRateUsed: "Taux de change",
                 tabs: {
                     dashboard: "Tableau de Bord",
                     growth: "Croissance Générale",
                     margin: "Marge & Rentabilité",
+                    margin_detail: "Analyse de la Marge (Détail)",
                     customers: "Analyse Client"
                 },
                 tabDescriptions: {
                     dashboard: "Vue d'ensemble des principaux indicateurs et performances mensuelles",
                     growth: "Comparaison de la croissance des ventes et du volume 2024 vs 2025",
                     margin: "Analyse de la rentabilité, évolution des coûts et des marges",
+                    margin_detail: "Détail approfondi des marges chargé depuis des rapports externes",
                     customers: "Détail du chiffre d'affaires et bénéfice par client et succursale"
                 },
                 kpis: {
@@ -241,16 +296,22 @@
                 subtitle: "Sales and margin analysis 2024 - 2025",
                 footer: "SSC GOURMET DISTRIBUTION",
                 sourceInfo: "Combined info from Odoo and Appsheet",
+                languageSelection: "Language Selection",
+                currencySelection: "Currency Selection",
+                visibleCurrency: "Visible currency",
+                exchangeRateUsed: "Exchange rate",
                 tabs: {
                     dashboard: "General Dashboard",
                     growth: "General Growth",
                     margin: "Margin & Profitability",
+                    margin_detail: "Margin Analysis (Detail)",
                     customers: "Customer Analysis"
                 },
                 tabDescriptions: {
                     dashboard: "Overview of main KPIs and monthly performance",
                     growth: "Sales and volume growth comparison 2024 vs 2025",
                     margin: "Profitability analysis, cost evolution, and margins",
+                    margin_detail: "In-depth margin details loaded from external reports",
                     customers: "Revenue and profit detail by client and branch"
                 },
                 kpis: {
@@ -353,38 +414,8 @@
             );
         };
 
-        // --- CONSTANTS ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbwGH9wsueZV2np8T7JA8xqBpEVN1Y1qIF-4WtOpPjlV3-07x3F8bdUIawWwxpVcX7Wx/exec";
-        const COLORS = {
-            year2024: "#4169E1", year2024Light: "#93c5fd",
-            year2025: "#9333EA", year2025Light: "#d8b4fe",
-            positive: "#10b981", negative: "#ef4444", grid: "#e2e8f0"
-        };
-        const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-
-        // --- UTILS ---
-        const formatCurrency = (val, lang = 'es') => {
-            let locale = 'es-MX';
-            if (lang === 'fr') locale = 'fr-FR';
-            if (lang === 'en') locale = 'en-US';
-            return new Intl.NumberFormat(locale, { style: 'currency', currency: 'MXN' }).format(val);
-        };
-        const formatNumber = (val, lang = 'es') => {
-            let locale = 'es-MX';
-            if (lang === 'fr') locale = 'fr-FR';
-            if (lang === 'en') locale = 'en-US';
-            return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(val);
-        };
-        const parseDate = (dateStr) => {
-            if (!dateStr) return new Date();
-            let s = String(dateStr); if (s.includes('T')) s = s.split('T')[0];
-            const parts = s.split('-');
-            if (parts.length === 3) return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            return new Date(dateStr);
-        };
-
         // --- COMPONENTS ---
-        const LanguageSelector = ({ lang, setLang, isMobile = false }) => {
+        const LanguageSelector = ({ lang, setLang, isMobile = false, label }) => {
             const languages = [
                 { code: 'es', label: 'ES' },
                 { code: 'fr', label: 'FR' },
@@ -392,21 +423,65 @@
             ];
 
             return (
-                <div className={`flex ${isMobile ? 'gap-1' : 'gap-2'} bg-slate-800 p-1 rounded-lg justify-center w-full md:w-auto`}>
-                    {languages.map((l) => (
-                        <button
-                            key={l.code}
-                            onClick={() => setLang(l.code)}
-                            className={`
-                                px-2 py-1 rounded transition-all text-xs font-bold flex items-center gap-1 flex-1 justify-center
-                                ${lang === l.code 
-                                    ? 'bg-blue-600 text-white shadow' 
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-700'}
-                            `}
-                        >
-                            <span>{l.label}</span>
-                        </button>
-                    ))}
+                <div className="flex flex-col items-center w-full mb-4">
+                    {label && <span className={`text-[10px] uppercase font-bold mb-1 ${isMobile ? 'text-slate-300' : 'text-slate-500'}`}>{label}</span>}
+                    <div className={`flex ${isMobile ? 'gap-1' : 'gap-2'} bg-slate-800 p-1 rounded-lg justify-center w-full md:w-auto`}>
+                        {languages.map((l) => (
+                            <button
+                                key={l.code}
+                                onClick={() => setLang(l.code)}
+                                className={`
+                                    px-2 py-1 rounded transition-all text-xs font-bold flex items-center gap-1 flex-1 justify-center
+                                    ${lang === l.code 
+                                        ? 'bg-blue-600 text-white shadow' 
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-700'}
+                                `}
+                            >
+                                <span>{l.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const CurrencySelector = ({ currency, setCurrency, isMobile = false, t }) => {
+            const currencies = [
+                { code: 'MXN', label: 'MXN' },
+                { code: 'USD', label: 'USD' },
+                { code: 'EUR', label: 'EUR' }
+            ];
+
+            const rate = EXCHANGE_RATES[currency] || 1;
+            const rateText = currency === 'MXN' 
+                ? 'Base' 
+                : `1 ${currency} = ${rate.toFixed(2)} MXN`;
+
+            return (
+                <div className="flex flex-col items-center w-full">
+                    {t && <span className={`text-[10px] uppercase font-bold mb-1 ${isMobile ? 'text-slate-300' : 'text-slate-500'}`}>{t.currencySelection}</span>}
+                    <div className={`flex ${isMobile ? 'gap-1' : 'gap-2'} bg-slate-800 p-1 rounded-lg justify-center w-full md:w-auto`}>
+                        {currencies.map((c) => (
+                            <button
+                                key={c.code}
+                                onClick={() => setCurrency(c.code)}
+                                className={`
+                                    px-2 py-1 rounded transition-all text-xs font-bold flex items-center gap-1 flex-1 justify-center
+                                    ${currency === c.code 
+                                        ? 'bg-green-600 text-white shadow' 
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-700'}
+                                `}
+                            >
+                                <span>{c.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                    {!isMobile && (
+                        <div className="mt-2 text-center">
+                            <p className="text-[10px] text-slate-500">{t.visibleCurrency}: <span className="text-white font-bold">{currency}</span></p>
+                            <p className="text-[9px] text-slate-600">{t.exchangeRateUsed}: {rateText}</p>
+                        </div>
+                    )}
                 </div>
             );
         };
@@ -418,16 +493,61 @@
             const [activeTab, setActiveTab] = useState('dashboard');
             const [processedData, setProcessedData] = useState(null);
             const [lang, setLang] = useState('es');
+            const [currency, setCurrency] = useState('MXN');
             const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
             const contentRef = useRef(null);
             const fullReportRef = useRef(null);
 
+            // Init State (Language & Currency)
             useEffect(() => {
-                const browserLang = navigator.language || navigator.userLanguage;
-                if (browserLang.startsWith('fr')) setLang('fr'); 
-                else if (browserLang.startsWith('en')) setLang('en');
-                else setLang('es');
+                // 1. Language Logic
+                const savedLang = localStorage.getItem('app_lang');
+                let initialLang = 'es';
+                
+                if (savedLang) {
+                    initialLang = savedLang;
+                } else {
+                    const browserLang = navigator.language || navigator.userLanguage;
+                    if (browserLang.startsWith('fr')) initialLang = 'fr'; 
+                    else if (browserLang.startsWith('en')) initialLang = 'en';
+                }
+                setLang(initialLang);
+
+                // 2. Currency Logic
+                const savedCurrency = localStorage.getItem('app_currency');
+                if (savedCurrency) {
+                    setCurrency(savedCurrency);
+                } else {
+                    // Default rule: Spanish -> MXN, Others -> USD
+                    if (initialLang === 'es') setCurrency('MXN');
+                    else setCurrency('USD');
+                }
             }, []);
+
+            const handleLangChange = (l) => {
+                setLang(l);
+                localStorage.setItem('app_lang', l);
+            };
+
+            const handleCurrencyChange = (c) => {
+                setCurrency(c);
+                localStorage.setItem('app_currency', c);
+            };
+
+            // Auto-resize for iframe
+            const handleIframeLoad = (e) => {
+                try {
+                    // Try to adjust height to content if possible (same-origin policy applies)
+                    // If cross-origin, this might fail or return standard window height
+                    const height = e.target.contentWindow.document.body.scrollHeight;
+                    if(height > 500) {
+                        e.target.style.height = `${height + 50}px`;
+                    }
+                } catch (error) {
+                    // Fallback for cross-origin or errors: set a reasonable min-height
+                    console.log("Cannot auto-resize iframe due to CORS or other error");
+                }
+            };
 
             const t = TRANSLATIONS[lang];
 
@@ -456,16 +576,15 @@
                 };
                 
                 fetchData();
-            }, [lang]); 
+            }, []); 
 
             const processAllData = (rawData) => {
-                // Same processing logic as before
                 const monthlyData = Array(12).fill(0).map((_, i) => ({
                     name: MONTHS[i], monthIndex: i,
                     sales2024: 0, sales2025: 0, kg2024: 0, kg2025: 0,
                     cost2024: 0, cost2025: 0, profit2024: 0, profit2025: 0
                 }));
-                const clients = {}; const recipes = {};
+                const clients = {}; 
                 let totals = { sales2024: 0, sales2025: 0, kg2024: 0, kg2025: 0, profit2024: 0, profit2025: 0 };
 
                 rawData.forEach(item => {
@@ -481,22 +600,19 @@
                     const totalCost = parseNum(item.coffee_total_cost);
                     const profit = sale - totalCost;
                     const clientId = item.client_fiscal_id || "Desconocido";
-                    const recipeId = item.item_recipe || "Generico";
 
                     if (!clients[clientId]) clients[clientId] = { name: clientId, sales2024: 0, sales2025: 0 };
-                    if (!recipes[recipeId]) recipes[recipeId] = { name: recipeId, kg2024: 0, kg2025: 0, profit2025: 0, sales2025: 0 };
 
                     if (year === 2024) {
                         monthlyData[month].sales2024 += sale; monthlyData[month].kg2024 += kg;
                         monthlyData[month].cost2024 += totalCost; monthlyData[month].profit2024 += profit;
                         totals.sales2024 += sale; totals.kg2024 += kg; totals.profit2024 += profit;
-                        clients[clientId].sales2024 += sale; recipes[recipeId].kg2024 += kg;
+                        clients[clientId].sales2024 += sale;
                     } else if (year === 2025) {
                         monthlyData[month].sales2025 += sale; monthlyData[month].kg2025 += kg;
                         monthlyData[month].cost2025 += totalCost; monthlyData[month].profit2025 += profit;
                         totals.sales2025 += sale; totals.kg2025 += kg; totals.profit2025 += profit;
-                        clients[clientId].sales2025 += sale; recipes[recipeId].kg2025 += kg;
-                        recipes[recipeId].profit2025 += profit; recipes[recipeId].sales2025 += sale;
+                        clients[clientId].sales2025 += sale;
                     }
                 });
 
@@ -515,9 +631,15 @@
                 setProcessedData({
                     monthly: monthlyData,
                     clients: Object.values(clients).sort((a,b) => b.sales2025 - a.sales2025),
-                    recipes: Object.values(recipes).sort((a,b) => b.kg2025 - a.kg2025),
                     totals: totals
                 });
+            };
+
+            const handleDownloadFullReport = async () => {
+                setIsGeneratingPdf(true);
+                await new Promise(r => setTimeout(r, 2500)); 
+                if (fullReportRef.current) await generatePdfFromElement(fullReportRef.current, `Informe_Completo_Ventas.pdf`);
+                setIsGeneratingPdf(false);
             };
 
             const generatePdfFromElement = async (element, filename) => {
@@ -545,22 +667,6 @@
                 finally { element.style.width = originalWidth; }
             };
 
-            const handleDownloadCurrentView = async () => {
-                if (!contentRef.current) return;
-                const element = contentRef.current;
-                element.classList.add('pdf-mode');
-                await new Promise(r => setTimeout(r, 500)); 
-                await generatePdfFromElement(element, `Report_${activeTab}.pdf`);
-                element.classList.remove('pdf-mode');
-            };
-
-            const handleDownloadFullReport = async () => {
-                setIsGeneratingPdf(true);
-                await new Promise(r => setTimeout(r, 2500)); 
-                if (fullReportRef.current) await generatePdfFromElement(fullReportRef.current, `Informe_Completo_Ventas.pdf`);
-                setIsGeneratingPdf(false);
-            };
-
             if (loading) return <div className="flex h-screen items-center justify-center bg-gray-50"><div className="text-center"><Icon name="loader" className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" /><h2 className="text-xl font-semibold text-gray-700">{t.common.loading}</h2></div></div>;
             if (error || !processedData) return <div className="p-10 text-red-600 text-center">{error}</div>;
 
@@ -575,46 +681,64 @@
                             <NavButton id="dashboard" label={t.tabs.dashboard} icon="dashboard" active={activeTab} set={setActiveTab} />
                             <NavButton id="growth" label={t.tabs.growth} icon="trendingUp" active={activeTab} set={setActiveTab} />
                             <NavButton id="margin" label={t.tabs.margin} icon="dollar" active={activeTab} set={setActiveTab} />
+                            <NavButton id="margin_detail" label={t.tabs.margin_detail} icon="list" active={activeTab} set={setActiveTab} />
                             <NavButton id="customers" label={t.tabs.customers} icon="users" active={activeTab} set={setActiveTab} />
                         </nav>
-                        <div className="p-4 border-t border-slate-800">
-                            <LanguageSelector lang={lang} setLang={setLang} />
+                        <div className="p-4 border-t border-slate-800 space-y-4">
+                            <LanguageSelector lang={lang} setLang={handleLangChange} label={t.languageSelection} />
+                            <CurrencySelector currency={currency} setCurrency={handleCurrencyChange} t={t} />
                         </div>
                         <div className="p-4 border-t border-slate-800 text-[10px] text-slate-500 text-center font-bold tracking-wider">{t.footer}</div>
                     </aside>
 
-                    <div className="md:hidden fixed top-0 w-full bg-slate-900 text-white z-30 p-4 flex justify-between items-center shadow-md">
-                        <span className="font-bold">{t.title}</span>
-                        <div className="flex gap-2">
-                            <LanguageSelector lang={lang} setLang={setLang} isMobile={true} />
+                    <div className="md:hidden fixed top-0 w-full bg-slate-900 text-white z-30 p-4 flex flex-col justify-between items-center shadow-md">
+                        <div className="flex justify-between w-full items-center mb-2">
+                            <span className="font-bold">{t.title}</span>
+                            <div className="flex gap-2">
+                                <LanguageSelector lang={lang} setLang={handleLangChange} isMobile={true} />
+                            </div>
+                        </div>
+                        <div className="w-full flex justify-center">
+                             <CurrencySelector currency={currency} setCurrency={handleCurrencyChange} isMobile={true} />
                         </div>
                     </div>
                     <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-30 flex justify-around p-2">
-                         {['dashboard','growth','margin','customers'].map(tab => (
-                             <button key={tab} onClick={() => setActiveTab(tab)} className={`p-2 rounded-full ${activeTab === tab ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}><Icon name={tab === 'customers' ? 'users' : (tab === 'margin' ? 'dollar' : (tab === 'growth' ? 'trendingUp' : 'dashboard'))} className="w-6 h-6"/></button>
+                         {['dashboard','growth','margin','margin_detail','customers'].map(tab => (
+                             <button key={tab} onClick={() => setActiveTab(tab)} className={`p-2 rounded-full ${activeTab === tab ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}><Icon name={tab === 'customers' ? 'users' : (tab === 'margin_detail' ? 'list' : (tab === 'margin' ? 'dollar' : (tab === 'growth' ? 'trendingUp' : 'dashboard')))} className="w-6 h-6"/></button>
                          ))}
                     </div>
 
-                    <main className="flex-1 overflow-y-auto bg-gray-50 relative pt-16 md:pt-0 pb-16 md:pb-0" ref={contentRef}>
+                    <main className="flex-1 overflow-y-auto bg-gray-50 relative pt-28 md:pt-0 pb-16 md:pb-0" ref={contentRef}>
                         <div className="max-w-7xl mx-auto p-4 md:p-8">
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                                 <div><h2 className="text-2xl md:text-3xl font-bold text-slate-800">{t.tabs[activeTab]}</h2><p className="text-slate-500 mt-1 text-sm">{t.tabDescriptions[activeTab]}</p></div>
                                 <div className="flex gap-2"><button onClick={handleDownloadFullReport} disabled={isGeneratingPdf} className="hide-on-pdf flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-all text-sm font-medium disabled:opacity-50">{isGeneratingPdf ? <Icon name="loader" className="w-4 h-4 animate-spin"/> : <Icon name="fileText" className="w-4 h-4" />}{isGeneratingPdf ? t.common.generating : t.common.downloadFull}</button></div>
                             </div>
-                            {activeTab === 'dashboard' && <DashboardView data={processedData} t={t} lang={lang} />}
-                            {activeTab === 'growth' && <GrowthView data={processedData} t={t} lang={lang} />}
-                            {activeTab === 'margin' && <MarginView data={processedData} t={t} lang={lang} />}
-                            {activeTab === 'customers' && <CustomersView rawData={data} t={t} lang={lang} />}
+                            {activeTab === 'dashboard' && <DashboardView data={processedData} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'growth' && <GrowthView data={processedData} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'margin' && <MarginView data={processedData} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'margin_detail' && (
+                                <div className="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+                                    <iframe 
+                                        src={`pages/contenido-${lang}.html`}
+                                        title="Margin Analysis Detail"
+                                        className="w-full border-0"
+                                        style={{minHeight: '85vh'}}
+                                        onLoad={handleIframeLoad}
+                                    />
+                                </div>
+                            )}
+                            {activeTab === 'customers' && <CustomersView rawData={data} t={t} lang={lang} currency={currency} isPdfMode={isGeneratingPdf} />}
                         </div>
                     </main>
 
                     {isGeneratingPdf && (
                         <div ref={fullReportRef} className="pdf-mode">
                             <div className="mb-8 border-b pb-4"><h1 className="text-3xl font-bold text-slate-900">{t.title}</h1><p className="text-slate-500">{t.subtitle} - {t.footer}</p><p className="text-sm text-slate-400 mt-1">{new Date().toLocaleDateString()}</p></div>
-                            <div className="mb-8"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.dashboard}</h2><DashboardView data={processedData} t={t} lang={lang} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.growth}</h2><GrowthView data={processedData} t={t} lang={lang} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.margin}</h2><MarginView data={processedData} t={t} lang={lang} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.customers}</h2><CustomersView rawData={data} t={t} lang={lang} isPdfMode={true} /></div>
+                            <div className="mb-8"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.dashboard}</h2><DashboardView data={processedData} t={t} lang={lang} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.growth}</h2><GrowthView data={processedData} t={t} lang={lang} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.margin}</h2><MarginView data={processedData} t={t} lang={lang} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.customers}</h2><CustomersView rawData={data} t={t} lang={lang} currency={currency} isPdfMode={true} /></div>
                         </div>
                     )}
                 </div>
@@ -631,7 +755,7 @@
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-start justify-between relative overflow-hidden">
                 <div className="z-10 relative overflow-hidden w-full mr-2">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{title}</p>
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-800 truncate" title={value}>{value}</h3>
+                    <h3 className="text-lg md:text-xl font-bold text-gray-800 break-words leading-tight" title={value}>{value}</h3>
                     {subValue && <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}><span>{isPositive ? '↑' : '↓'}</span><span>{subValue}</span></div>}
                 </div>
                 <div className={`p-3 rounded-lg flex-shrink-0 ${isPositive === false ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}><Icon name={icon} className="w-6 h-6" /></div>
@@ -646,30 +770,40 @@
         );
 
         // --- DASHBOARD VIEW ---
-        const DashboardView = ({ data, t, lang }) => {
+        const DashboardView = ({ data, t, lang, currency }) => {
             const { totals, monthly, clients } = data;
             const salesGrowthPct = totals.sales2024 > 0 ? ((totals.sales2025 - totals.sales2024) / totals.sales2024) * 100 : 0;
             const kgGrowthPct = totals.kg2024 > 0 ? ((totals.kg2025 - totals.kg2024) / totals.kg2024) * 100 : 0;
             const marginDiff = totals.avgMarginPerKg2025 - totals.avgMarginPerKg2024;
             const profitGrowthPct = totals.profit2024 > 0 ? ((totals.profit2025 - totals.profit2024) / totals.profit2024) * 100 : 0;
-            const insights = [`${t.kpis.growthRevenue}: ${salesGrowthPct.toFixed(1)}% ${t.common.vs} 2024.`, `${t.kpis.totalKg}: ${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg (${kgGrowthPct > 0 ? '+' : ''}${kgGrowthPct.toFixed(1)}%).`, `${t.kpis.avgMargin}: ${marginDiff >= 0 ? '+' : ''}${formatCurrency(marginDiff, lang)} ${t.common.vs} 2024.`];
+            
+            // Format helpers inside render to use current currency
+            const fC = (v) => formatCurrency(v, currency, lang);
+            const insights = [`${t.kpis.growthRevenue}: ${salesGrowthPct.toFixed(1)}% ${t.common.vs} 2024.`, `${t.kpis.totalKg}: ${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg (${kgGrowthPct > 0 ? '+' : ''}${kgGrowthPct.toFixed(1)}%).`, `${t.kpis.avgMargin}: ${marginDiff >= 0 ? '+' : ''}${fC(marginDiff)} ${t.common.vs} 2024.`];
+
+            // Convert chart data
+            const chartData = monthly.map(m => ({
+                ...m,
+                sales2024: m.sales2024 / EXCHANGE_RATES[currency],
+                sales2025: m.sales2025 / EXCHANGE_RATES[currency]
+            }));
 
             return (
                 <div className="animate-fade-in space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <KPICard title={`${t.kpis.totalRevenue} 2025`} value={formatCurrency(totals.sales2025, lang)} subValue={`${salesGrowthPct.toFixed(1)}%`} isPositive={salesGrowthPct > 0} icon="dollar" />
+                        <KPICard title={`${t.kpis.totalRevenue} 2025`} value={fC(totals.sales2025)} subValue={`${salesGrowthPct.toFixed(1)}%`} isPositive={salesGrowthPct > 0} icon="dollar" />
                         <KPICard title={`${t.kpis.totalKg} 2025`} value={`${formatNumber(totals.kg2025, lang)} kg`} subValue={`${kgGrowthPct.toFixed(1)}%`} isPositive={kgGrowthPct > 0} icon="scale" />
-                        <KPICard title={t.kpis.avgMargin} value={formatCurrency(totals.avgMarginPerKg2025, lang)} subValue={`${formatCurrency(marginDiff, lang)}`} isPositive={marginDiff >= 0} icon="chart" />
-                        <KPICard title={t.kpis.totalProfit} value={formatCurrency(totals.profit2025, lang)} subValue={`${profitGrowthPct.toFixed(1)}%`} isPositive={profitGrowthPct > 0} icon="trendingUp" />
+                        <KPICard title={t.kpis.avgMargin} value={fC(totals.avgMarginPerKg2025)} subValue={`${fC(marginDiff)}`} isPositive={marginDiff >= 0} icon="chart" />
+                        <KPICard title={t.kpis.totalProfit} value={fC(totals.profit2025)} subValue={`${profitGrowthPct.toFixed(1)}%`} isPositive={profitGrowthPct > 0} icon="trendingUp" />
                     </div>
                     <div className="flex flex-col lg:flex-row gap-6">
                         <div className="flex-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                             <h3 className="font-bold text-gray-700 mb-6">{t.charts.monthlyRevenue}</h3>
-                            <div className="h-72"><ResponsiveContainer><LineChart data={monthly}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="name"/><YAxis/><Tooltip formatter={(v)=>formatCurrency(v,lang)}/><Legend/><Line type="monotone" dataKey="sales2024" stroke={COLORS.year2024}/><Line type="monotone" dataKey="sales2025" stroke={COLORS.year2025}/></LineChart></ResponsiveContainer></div>
+                            <div className="h-72"><ResponsiveContainer><LineChart data={chartData}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="name"/><YAxis tickFormatter={(v) => new Intl.NumberFormat('en-US', { notation: "compact" }).format(v)}/><Tooltip formatter={(v)=>fC(v)}/><Legend/><Line type="monotone" dataKey="sales2024" stroke={COLORS.year2024}/><Line type="monotone" dataKey="sales2025" stroke={COLORS.year2025}/></LineChart></ResponsiveContainer></div>
                         </div>
                         <div className="w-full lg:w-2/5 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                             <h3 className="font-bold text-gray-700 mb-6">{t.charts.topClients}</h3>
-                            <div className="overflow-x-auto"><table className="w-full text-xs md:text-sm text-left text-gray-500"><thead className="text-xs text-gray-700 uppercase bg-gray-50"><tr><th className="px-3 py-2 rounded-l-lg">{t.table.client}</th><th className="px-3 py-2 text-right">{t.table.sale}</th><th className="px-3 py-2 text-right rounded-r-lg">{t.table.growth}</th></tr></thead><tbody>{clients.slice(0, 5).map((client, idx) => { const growth = client.sales2024 > 0 ? ((client.sales2025 - client.sales2024) / client.sales2024) * 100 : 100; return (<tr key={idx} className="border-b hover:bg-gray-50"><td className="px-3 py-2 font-medium text-gray-900 text-xs md:text-sm whitespace-normal break-words" title={client.name}>{client.name}</td><td className="px-3 py-2 text-right">{formatCurrency(client.sales2025, lang)}</td><td className={`px-3 py-2 text-right font-bold ${growth >= 0 ? 'text-green-600' : 'text-red-500'}`}>{growth >= 0 ? '↑' : '↓'} {Math.abs(growth).toFixed(0)}%</td></tr>); })}</tbody></table></div>
+                            <div className="overflow-x-auto"><table className="w-full text-xs md:text-sm text-left text-gray-500"><thead className="text-xs text-gray-700 uppercase bg-gray-50"><tr><th className="px-3 py-2 rounded-l-lg">{t.table.client}</th><th className="px-3 py-2 text-right">{t.table.sale}</th><th className="px-3 py-2 text-right rounded-r-lg">{t.table.growth}</th></tr></thead><tbody>{clients.slice(0, 5).map((client, idx) => { const growth = client.sales2024 > 0 ? ((client.sales2025 - client.sales2024) / client.sales2024) * 100 : 100; return (<tr key={idx} className="border-b hover:bg-gray-50"><td className="px-3 py-2 font-medium text-gray-900 text-xs md:text-sm whitespace-normal break-words" title={client.name}>{client.name}</td><td className="px-3 py-2 text-right">{fC(client.sales2025)}</td><td className={`px-3 py-2 text-right font-bold ${growth >= 0 ? 'text-green-600' : 'text-red-500'}`}>{growth >= 0 ? '↑' : '↓'} {Math.abs(growth).toFixed(0)}%</td></tr>); })}</tbody></table></div>
                         </div>
                     </div>
                     <InsightBox title={t.obs.general} insights={insights} />
@@ -677,42 +811,62 @@
             );
         };
 
-        const GrowthView = ({ data, t, lang }) => {
+        const GrowthView = ({ data, t, lang, currency }) => {
             const { monthly, totals } = data;
+            const fC = (v) => formatCurrency(v, currency, lang);
+            
             const quarters = [{name:'Q1',months:[0,1,2]},{name:'Q2',months:[3,4,5]},{name:'Q3',months:[6,7,8]},{name:'Q4',months:[9,10,11]}].map(q => { const s24=q.months.reduce((a,m)=>a+monthly[m].sales2024,0); const s25=q.months.reduce((a,m)=>a+monthly[m].sales2025,0); return {name:q.name,sales2024:s24,sales2025:s25,pct:s24>0?((s25-s24)/s24)*100:0}; });
-            const insights = [`${t.kpis.growthRevenue}: +${formatCurrency(totals.sales2025 - totals.sales2024, lang)}.`];
+            const insights = [`${t.kpis.growthRevenue}: +${fC(totals.sales2025 - totals.sales2024)}.`];
+            
+            const chartData = monthly.map(m => ({
+                ...m,
+                sales2024: m.sales2024 / EXCHANGE_RATES[currency],
+                sales2025: m.sales2025 / EXCHANGE_RATES[currency]
+            }));
+
             return (
                 <div className="space-y-6 animate-fade-in">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><KPICard title={t.kpis.growthRevenue} value={formatCurrency(totals.sales2025 - totals.sales2024, lang)} isPositive={true} icon="dollar" /><KPICard title={t.kpis.growthVol} value={`${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg`} isPositive={true} icon="scale" /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><KPICard title={t.kpis.growthRevenue} value={fC(totals.sales2025 - totals.sales2024)} isPositive={true} icon="dollar" /><KPICard title={t.kpis.growthVol} value={`${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg`} isPositive={true} icon="scale" /></div>
                     <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.monthlyComp}</h3><div className="h-64"><ResponsiveContainer><BarChart data={monthly}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis/><Tooltip formatter={(v)=>formatCurrency(v,lang)}/><Bar dataKey="sales2024" fill={COLORS.year2024}/><Bar dataKey="sales2025" fill={COLORS.year2025}/></BarChart></ResponsiveContainer></div></div>
-                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.quarterly}</h3><table className="w-full text-xs md:text-sm"><thead className="bg-gray-50 text-gray-600"><tr><th className="px-3 py-2 text-left">{t.table.q}</th><th className="px-3 py-2 text-right">2024</th><th className="px-3 py-2 text-right">2025</th><th className="px-3 py-2 text-right">{t.table.change}</th></tr></thead><tbody>{quarters.map((q,i)=>(<tr key={i} className="border-b"><td className="px-3 py-2 font-medium">{q.name}</td><td className="px-3 py-2 text-right">{formatCurrency(q.sales2024,lang)}</td><td className="px-3 py-2 text-right">{formatCurrency(q.sales2025,lang)}</td><td className={`px-3 py-2 text-right font-bold ${q.pct>=0?'text-green-600':'text-red-500'}`}>{q.pct.toFixed(1)}%</td></tr>))}</tbody></table></div>
+                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.monthlyComp}</h3><div className="h-64"><ResponsiveContainer><BarChart data={chartData}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis tickFormatter={(v) => new Intl.NumberFormat('en-US', { notation: "compact" }).format(v)}/><Tooltip formatter={(v)=>fC(v)}/><Bar dataKey="sales2024" fill={COLORS.year2024}/><Bar dataKey="sales2025" fill={COLORS.year2025}/></BarChart></ResponsiveContainer></div></div>
+                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.quarterly}</h3><table className="w-full text-xs md:text-sm"><thead className="bg-gray-50 text-gray-600"><tr><th className="px-3 py-2 text-left">{t.table.q}</th><th className="px-3 py-2 text-right">2024</th><th className="px-3 py-2 text-right">2025</th><th className="px-3 py-2 text-right">{t.table.change}</th></tr></thead><tbody>{quarters.map((q,i)=>(<tr key={i} className="border-b"><td className="px-3 py-2 font-medium">{q.name}</td><td className="px-3 py-2 text-right">{fC(q.sales2024)}</td><td className="px-3 py-2 text-right">{fC(q.sales2025)}</td><td className={`px-3 py-2 text-right font-bold ${q.pct>=0?'text-green-600':'text-red-500'}`}>{q.pct.toFixed(1)}%</td></tr>))}</tbody></table></div>
                     </div>
                     <InsightBox title={t.obs.growth} insights={insights} />
                 </div>
             );
         };
 
-        const MarginView = ({ data, t, lang }) => {
+        const MarginView = ({ data, t, lang, currency }) => {
             const { monthly, totals } = data;
             const [selectedYear, setSelectedYear] = useState('2025');
+            const fC = (v) => formatCurrency(v, currency, lang);
+            
             const marginChange = totals.avgMarginPerKg2025 - totals.avgMarginPerKg2024;
             const marginPctChange = totals.marginPct2025 - totals.marginPct2024;
-            const insights = [`${t.kpis.avgMargin}: ${formatCurrency(totals.avgMarginPerKg2025, lang)}.`];
+            const insights = [`${t.kpis.avgMargin}: ${fC(totals.avgMarginPerKg2025)}.`];
+
+            const chartData = monthly.map(m => ({
+                ...m,
+                avgCost2024: m.avgCost2024 / EXCHANGE_RATES[currency],
+                avgPrice2024: m.avgPrice2024 / EXCHANGE_RATES[currency],
+                avgCost2025: m.avgCost2025 / EXCHANGE_RATES[currency],
+                avgPrice2025: m.avgPrice2025 / EXCHANGE_RATES[currency],
+            }));
+
             return (
                 <div className="space-y-6 animate-fade-in">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <KPICard title={t.kpis.avgMargin} value={formatCurrency(totals.avgMarginPerKg2025, lang)} subValue={formatCurrency(marginChange, lang)} isPositive={marginChange >= 0} icon="dollar" />
+                        <KPICard title={t.kpis.avgMargin} value={fC(totals.avgMarginPerKg2025)} subValue={fC(marginChange)} isPositive={marginChange >= 0} icon="dollar" />
                         <KPICard title={t.kpis.marginPct} value={`${totals.marginPct2025.toFixed(1)}%`} subValue={`${marginPctChange.toFixed(1)}%`} isPositive={marginPctChange >= 0} icon="chart" />
-                        <KPICard title={t.kpis.totalProfit} value={formatCurrency(totals.profit2025, lang)} isPositive={true} icon="trendingUp" />
+                        <KPICard title={t.kpis.totalProfit} value={fC(totals.profit2025)} isPositive={true} icon="trendingUp" />
                     </div>
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative"><div className="flex justify-between items-center mb-6"><h3 className="font-bold text-gray-700">{t.charts.priceVsCost}</h3><div className="flex bg-gray-100 rounded-lg p-1"><button onClick={()=>setSelectedYear('2024')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2024'?'bg-white shadow text-blue-600':''}`}>2024</button><button onClick={()=>setSelectedYear('2025')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2025'?'bg-white shadow text-purple-600':''}`}>2025</button></div></div><div className="h-80"><ResponsiveContainer><AreaChart data={monthly}><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} stopOpacity={0.2}/><stop offset="95%" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis/><Tooltip formatter={(v)=>formatCurrency(v,lang)}/><Area type="monotone" dataKey={`avgCost${selectedYear}`} stroke="#ef4444" fill="transparent" strokeDasharray="5 5"/><Area type="monotone" dataKey={`avgPrice${selectedYear}`} stroke={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} fill="url(#g)"/></AreaChart></ResponsiveContainer></div></div>
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative"><div className="flex justify-between items-center mb-6"><h3 className="font-bold text-gray-700">{t.charts.priceVsCost}</h3><div className="flex bg-gray-100 rounded-lg p-1"><button onClick={()=>setSelectedYear('2024')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2024'?'bg-white shadow text-blue-600':''}`}>2024</button><button onClick={()=>setSelectedYear('2025')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2025'?'bg-white shadow text-purple-600':''}`}>2025</button></div></div><div className="h-80"><ResponsiveContainer><AreaChart data={chartData}><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} stopOpacity={0.2}/><stop offset="95%" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis tickFormatter={(v) => new Intl.NumberFormat('en-US', { notation: "compact" }).format(v)}/><Tooltip formatter={(v)=>fC(v)}/><Area type="monotone" dataKey={`avgCost${selectedYear}`} stroke="#ef4444" fill="transparent" strokeDasharray="5 5"/><Area type="monotone" dataKey={`avgPrice${selectedYear}`} stroke={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} fill="url(#g)"/></AreaChart></ResponsiveContainer></div></div>
                     <InsightBox title={t.obs.margin} insights={insights} />
                 </div>
             );
         };
 
-        const CustomersView = ({ rawData, t, lang, isPdfMode }) => {
+        const CustomersView = ({ rawData, t, lang, currency, isPdfMode }) => {
             const [selectedYears, setSelectedYears] = useState(['2024']);
             const [startMonth, setStartMonth] = useState(0);
             const [endMonth, setEndMonth] = useState(11);
@@ -720,6 +874,8 @@
             const [sortConfig, setSortConfig] = useState({ key: 'profit', direction: 'desc' });
             const [othersExpanded, setOthersExpanded] = useState(false);
             
+            const fC = (v) => formatCurrency(v, currency, lang);
+
             const handleSort = (key) => setSortConfig({ key, direction: sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc' });
             const getSortIcon = (key) => sortConfig.key !== key ? <span className="ml-1 text-gray-300">↕</span> : (sortConfig.direction === 'asc' ? <span className="ml-1 text-blue-600">↑</span> : <span className="ml-1 text-blue-600">↓</span>);
             
@@ -813,7 +969,7 @@
             }, [rawData, selectedYears, startMonth, endMonth, groupBy, sortConfig, t]);
 
             const insights = [
-                `Top Cliente: ${customerData.length > 0 ? customerData[0].name : 'N/A'} con ${formatCurrency(customerData.length > 0 ? customerData[0].profit : 0, lang)} de beneficio.`,
+                `Top Cliente: ${customerData.length > 0 ? customerData[0].name : 'N/A'} con ${fC(customerData.length > 0 ? customerData[0].profit : 0)} de beneficio.`,
                 `Total procesado en esta vista: ${formatNumber(summary.kg, lang)} kg.`
             ];
 
@@ -833,8 +989,8 @@
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <KPICard title={t.kpis.profitability} value={formatCurrency(summary.profit, lang)} isPositive={true} icon="trendingUp" />
-                        <KPICard title={t.kpis.totalRevenue} value={formatCurrency(summary.revenue, lang)} isPositive={true} icon="dollar" />
+                        <KPICard title={t.kpis.profitability} value={fC(summary.profit)} isPositive={true} icon="trendingUp" />
+                        <KPICard title={t.kpis.totalRevenue} value={fC(summary.revenue)} isPositive={true} icon="dollar" />
                         <KPICard title={t.kpis.totalKg} value={`${formatNumber(summary.kg, lang)} kg`} isPositive={true} icon="scale" />
                     </div>
 
@@ -846,8 +1002,8 @@
                                         {row.isOthers && <span className="mr-2">{othersExpanded ? '▼' : '▶'}</span>}
                                         {row.name}
                                     </td>
-                                    <td className="px-4 py-2 text-right">{formatCurrency(row.totalRevenue, lang)}</td>
-                                    <td className="px-4 py-2 text-right text-green-600 font-bold">{formatCurrency(row.profit, lang)}</td>
+                                    <td className="px-4 py-2 text-right">{fC(row.totalRevenue)}</td>
+                                    <td className="px-4 py-2 text-right text-green-600 font-bold">{fC(row.profit)}</td>
                                     <td className="px-4 py-2 text-right">{row.contribPct.toFixed(1)}%</td>
                                     <td className="px-4 py-2 text-right">{row.marginPct.toFixed(1)}%</td>
                                     <td className="px-4 py-2 text-right">{formatNumber(row.totalKg, lang)}</td>
@@ -856,8 +1012,8 @@
                                 {row.isOthers && othersExpanded && othersData.map((sub, j) => (
                                     <tr key={`sub-${j}`} className="border-b bg-gray-50/50 text-gray-500 text-xs">
                                         <td className="px-4 py-1 pl-8 truncate">{sub.name}</td>
-                                        <td className="px-4 py-1 text-right">{formatCurrency(sub.totalRevenue, lang)}</td>
-                                        <td className="px-4 py-1 text-right">{formatCurrency(sub.profit, lang)}</td>
+                                        <td className="px-4 py-1 text-right">{fC(sub.totalRevenue)}</td>
+                                        <td className="px-4 py-1 text-right">{fC(sub.profit)}</td>
                                         <td className="px-4 py-1 text-right">{sub.contribPct.toFixed(2)}%</td>
                                         <td className="px-4 py-1 text-right">{sub.marginPct.toFixed(1)}%</td>
                                         <td className="px-4 py-1 text-right">{formatNumber(sub.totalKg, lang)}</td>
