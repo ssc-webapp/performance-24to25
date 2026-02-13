@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ventas 2024 - 2025</title>
+    <title>Análisis de Venta y Márgenes 2024 - 2025</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & ReactDOM (Pinned Versions for Stability) -->
+    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
     
-    <!-- Prop-Types (Required dependency for Recharts UMD) -->
+    <!-- Prop-Types -->
     <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
     
-    <!-- Recharts (Pinned Version) -->
+    <!-- Recharts -->
     <script src="https://unpkg.com/recharts@2.12.3/umd/Recharts.js"></script>
     
-    <!-- Chart.js (Added for Strategic Dashboard) -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Babel -->
@@ -29,514 +29,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
         body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-
-        /* PDF Generation Classes */
-        .pdf-mode {
-            width: 1200px !important;
-            min-height: 100vh !important;
-            overflow: visible !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            z-index: 9999 !important;
-            background: #f8fafc !important;
-            padding: 40px !important;
-        }
-        
+        .pdf-mode { width: 1200px !important; min-height: 100vh !important; overflow: visible !important; position: absolute !important; top: 0 !important; left: 0 !important; z-index: 9999 !important; background: #f8fafc !important; padding: 40px !important; }
         .pdf-mode .grid { display: grid !important; }
         .hide-on-pdf { display: none !important; }
         .page-break { page-break-before: always; margin-top: 40px; border-top: 2px dashed #cbd5e1; padding-top: 40px; }
-
-        /* --- STRATEGIC DASHBOARD STYLES (Namespaced to .strat-view) --- */
-        .strat-view {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Original Body BG */
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .strat-view .container-like {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 40px;
-        }
-
-        /* Alert Banner */
-        .strat-view .alert-banner {
-            background: white;
-            border: 3px solid #dc2626;
-            color: #1f2937;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .strat-view .alert-banner h2 { font-size: 1.8em; margin-bottom: 12px; font-weight: bold; color: #dc2626; letter-spacing: 0.5px; }
-        .strat-view .alert-banner p { font-size: 1.1em; margin: 8px 0; font-weight: 600; color: #1f2937; }
-        .strat-view .alert-banner p:last-child { font-size: 0.95em; font-weight: 500; color: #4b5563; }
-
-        /* Metrics */
+        
+        /* Strategic View Styles */
+        .strat-view { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 12px; }
+        .strat-view .container-like { background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 40px; }
+        .strat-view .alert-banner { background: white; border: 3px solid #dc2626; color: #1f2937; padding: 25px; border-radius: 15px; margin-bottom: 30px; text-align: center; }
+        .strat-view .alert-banner h2 { font-size: 1.8em; margin-bottom: 12px; font-weight: bold; color: #dc2626; }
         .strat-view .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; margin-bottom: 40px; }
         .strat-view .metric-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-left: 5px solid; position: relative; transition: transform 0.3s ease; }
         .strat-view .metric-card:hover { transform: translateY(-5px); }
-        .strat-view .metric-card.purple { border-left-color: #7b2cbf; }
-        .strat-view .metric-card.red { border-left-color: #dc2626; }
-        .strat-view .metric-card.green { border-left-color: #059669; }
-        .strat-view .metric-card.orange { border-left-color: #ea580c; }
-        .strat-view .metric-label { font-size: 0.75em; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; font-weight: 600; }
+        .strat-view .metric-card.purple { border-left-color: #7b2cbf; } .strat-view .metric-card.purple .metric-value { color: #7b2cbf; }
+        .strat-view .metric-card.red { border-left-color: #dc2626; } .strat-view .metric-card.red .metric-value { color: #dc2626; }
+        .strat-view .metric-card.green { border-left-color: #059669; } .strat-view .metric-card.green .metric-value { color: #059669; }
+        .strat-view .metric-card.orange { border-left-color: #ea580c; } .strat-view .metric-card.orange .metric-value { color: #ea580c; }
+        .strat-view .metric-label { font-size: 0.75em; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 12px; }
         .strat-view .metric-value { font-size: 2.5em; font-weight: bold; margin-bottom: 8px; line-height: 1; }
-        .strat-view .metric-card.purple .metric-value { color: #7b2cbf; }
-        .strat-view .metric-card.red .metric-value { color: #dc2626; }
-        .strat-view .metric-card.green .metric-value { color: #059669; }
-        .strat-view .metric-card.orange .metric-value { color: #ea580c; }
         .strat-view .metric-change { font-size: 0.9em; font-weight: 600; display: flex; align-items: center; gap: 5px; color: #dc2626; }
-
-        /* Accordion */
-        .strat-view .accordion { background: #eff6ff; border: 2px solid #3b82f6; border-radius: 12px; margin-bottom: 30px; overflow: hidden; }
-        .strat-view .accordion-header { padding: 18px 24px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.05em; color: #1e40af; transition: background 0.2s; }
-        .strat-view .accordion-header:hover { background: #dbeafe; }
-        .strat-view .accordion-icon { width: 40px; height: 40px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2em; flex-shrink: 0; }
-        .strat-view .accordion-arrow { margin-left: auto; font-size: 1.2em; transition: transform 0.3s; }
-        .strat-view .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; border-top: 1px solid #bfdbfe; }
-        .strat-view .accordion.open .accordion-content { max-height: 1200px; }
-        .strat-view .accordion.open .accordion-arrow { transform: rotate(180deg); }
-        .strat-view .accordion-inner { padding: 30px; background: white; border-left: 4px solid #3b82f6; }
-        .strat-view .explanation-title { font-size: 1.3em; font-weight: bold; color: #1e40af; margin-bottom: 15px; }
-        .strat-view .explanation-description { color: #1e40af; line-height: 1.7; margin-bottom: 25px; font-size: 0.95em; }
-        .strat-view .calculation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 25px; }
-        .strat-view .calculation-steps { background: #f9fafb; padding: 25px; border-radius: 10px; border: 1px solid #e5e7eb; }
-        .strat-view .step { margin-bottom: 20px; }
-        .strat-view .step:last-child { margin-bottom: 0; }
-        .strat-view .step-title { font-weight: bold; color: #374151; margin-bottom: 8px; border-bottom: 2px solid #d1d5db; padding-bottom: 6px; }
-        .strat-view .step-content { font-family: 'Courier New', monospace; font-size: 0.9em; color: #6b7280; padding: 8px 0; }
-        .strat-view .step:last-child .step-title { color: #dc2626; border-bottom-color: #fca5a5; }
-        .strat-view .step:last-child .step-content { color: #dc2626; font-weight: bold; font-size: 1.05em; }
-        
-        /* Visual Comparison Bar */
-        .strat-view .visual-comparison { display: flex; flex-direction: column; justify-content: center; gap: 20px; }
-        .strat-view .comparison-bar { margin-bottom: 15px; }
-        .strat-view .comparison-label { display: flex; justify-content: space-between; font-size: 0.85em; font-weight: 600; color: #4b5563; margin-bottom: 6px; }
-        .strat-view .bar-container { width: 100%; height: 32px; background: #e5e7eb; border-radius: 20px; overflow: hidden; position: relative; }
-        .strat-view .bar-fill { height: 100%; border-radius: 20px; }
-        .strat-view .bar-fill.green { background: linear-gradient(90deg, #059669 0%, #10b981 100%); }
-        .strat-view .bar-fill.red { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); position: relative; }
-        .strat-view .bar-gap { position: absolute; right: 0; top: 0; height: 100%; background: repeating-linear-gradient(45deg, #f3f4f6, #f3f4f6 10px, #d1d5db 10px, #d1d5db 20px); border-left: 2px dashed #6b7280; display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: bold; color: #4b5563; }
-        
-        .strat-view .breakdown-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        .strat-view .breakdown-item { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px; }
-        .strat-view .breakdown-icon { width: 36px; height: 36px; background: #dbeafe; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.2em; flex-shrink: 0; }
-        .strat-view .breakdown-value { font-weight: bold; color: #1f2937; font-size: 0.95em; }
-        .strat-view .final-note { background: #dbeafe; padding: 18px; border-radius: 8px; border-left: 4px solid #3b82f6; color: #1e40af; font-size: 0.9em; line-height: 1.6; font-style: italic; margin-top: 20px; }
-
-        /* General Strat View */
         .strat-view .chart-container { background: white; border-radius: 15px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
         .strat-view .chart-title { font-size: 1.5em; color: #333; margin-bottom: 20px; font-weight: 600; }
         .strat-view .chart-wrapper { position: relative; height: 400px; }
         .strat-view .table-container { background: white; border-radius: 15px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow-x: auto; }
         .strat-view table { width: 100%; border-collapse: collapse; }
-        .strat-view th { background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); color: white; padding: 15px; text-align: left; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; }
+        .strat-view th { background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); color: white; padding: 15px; text-align: left; font-weight: 600; text-transform: uppercase; font-size: 0.85em; }
         .strat-view td { padding: 15px; border-bottom: 1px solid #e5e7eb; }
-        .strat-view tr:hover { background-color: #f9fafb; }
         .strat-view .highlight-row { background-color: #fef3c7; font-weight: 600; }
         .strat-view .number { font-family: 'Courier New', monospace; font-weight: 600; }
         .strat-view .negative-value { color: #dc2626; }
         .strat-view .positive-value { color: #059669; }
-        .strat-view .section-title { font-size: 1.8em; color: #7b2cbf; margin: 40px 0 20px 0; font-weight: bold; border-left: 5px solid #7b2cbf; padding-left: 15px; }
         .strat-view .insight-box { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 5px solid #f59e0b; padding: 20px; border-radius: 10px; margin: 20px 0; }
-        .strat-view .insight-box h3 { color: #92400e; margin-bottom: 10px; font-weight: bold; }
-        .strat-view .insight-box p { color: #78350f; line-height: 1.6; }
-
-        /* Priorities & Timeline */
         .strat-view .priority-section { background: white; border-radius: 15px; padding: 30px; margin-bottom: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); border-left: 6px solid; }
         .strat-view .priority-section.priority-1 { border-left-color: #dc2626; background: linear-gradient(135deg, #ffffff 0%, #fee2e2 100%); }
         .strat-view .priority-section.priority-2 { border-left-color: #ea580c; background: linear-gradient(135deg, #ffffff 0%, #ffedd5 100%); }
         .strat-view .priority-section.priority-3 { border-left-color: #7b2cbf; background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%); }
         .strat-view .priority-section.control { border-left-color: #059669; background: linear-gradient(135deg, #ffffff 0%, #d1fae5 100%); }
         .strat-view .priority-header { margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
-        .strat-view .priority-badge { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.75em; font-weight: bold; letter-spacing: 1px; white-space: nowrap; }
+        .strat-view .priority-badge { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.75em; font-weight: bold; }
         .strat-view .priority-2 .priority-badge { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); }
         .strat-view .priority-3 .priority-badge { background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); }
         .strat-view .control-badge { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
-        .strat-view .priority-header h3 { color: #333; font-size: 1.4em; margin: 0; flex: 1; }
         .strat-view .action-item { display: flex; gap: 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .strat-view .action-number { min-width: 40px; height: 40px; background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; flex-shrink: 0; }
-        .strat-view .action-content h4 { color: #333; margin-bottom: 5px; font-weight: bold; font-size: 1.1em; }
-        .strat-view .action-content p, .strat-view .action-content ul { color: #666; line-height: 1.6; font-size: 0.95em; margin: 0; }
-        .strat-view .action-content ul { margin-left: 20px; margin-top: 5px; list-style-type: disc; }
-        
         .strat-view .timeline-section { background: white; border-radius: 15px; padding: 40px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
-        .strat-view .timeline { position: relative; padding: 20px 0; }
-        .strat-view .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #7b2cbf, #059669); transform: translateX(-50%); }
-        .strat-view .timeline-item { display: grid; grid-template-columns: 1fr auto 1fr; gap: 30px; margin-bottom: 40px; align-items: start; }
-        .strat-view .timeline-item:nth-child(even) .timeline-content { grid-column: 1; text-align: right; }
-        .strat-view .timeline-item:nth-child(odd) .timeline-content { grid-column: 3; text-align: left; }
-        .strat-view .timeline-marker { grid-column: 2; background: white; border: 4px solid; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9em; color: white; position: relative; z-index: 2; }
-        .strat-view .week1-2 { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); border-color: #dc2626; }
-        .strat-view .week3-4 { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border-color: #ea580c; }
-        .strat-view .month2 { background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); border-color: #7b2cbf; }
-        .strat-view .month3 { background: linear-gradient(135deg, #059669 0%, #047857 100%); border-color: #059669; }
-        .strat-view .timeline-content { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.08); }
         .strat-view .final-warning { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 3px solid #dc2626; border-radius: 15px; padding: 30px; margin-top: 30px; text-align: center; }
-        .strat-view .final-warning h3 { color: #7f1d1d; margin-bottom: 15px; font-size: 1.5em; font-weight: bold; }
-        .strat-view .final-warning p { color: #7f1d1d; line-height: 1.8; }
-
-        @media (max-width: 768px) {
-            .strat-view .metrics-grid { grid-template-columns: 1fr; }
-            .strat-view .timeline::before { left: 40px; transform: none; }
-            .strat-view .timeline-item { grid-template-columns: 80px 1fr; gap: 15px; }
-            .strat-view .timeline-item:nth-child(even) .timeline-content, .strat-view .timeline-item:nth-child(odd) .timeline-content { grid-column: 2; text-align: left; }
-            .strat-view .timeline-marker { grid-column: 1; }
-            .strat-view .calculation-grid, .strat-view .breakdown-grid { grid-template-columns: 1fr; }
-        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 h-screen w-screen overflow-hidden">
     <div id="root" class="h-full w-full"></div>
 
     <script type="text/babel">
+        // 1. GLOBALS & ICONS
         const { useState, useEffect, useMemo, useRef } = React;
         const { 
             LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, 
-            CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, ComposedChart 
+            CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell 
         } = window.Recharts || {};
 
-        // --- TRANSLATIONS ---
-        const TRANSLATIONS = {
-            es: {
-                title: "Ventas 2024 - 2025",
-                subtitle: "Análisis de venta y márgenes",
-                footer: "SSC GOURMET DISTRIBUTION",
-                sourceInfo: "Información combinada de Odoo y Apsheet",
-                tabs: {
-                    dashboard: "Dashboard General",
-                    growth: "Crecimiento General",
-                    margin: "Margen & Rentabilidad",
-                    customers: "Análisis por Cliente",
-                    analysis: "Análisis de Margen (Estratégico)"
-                },
-                kpis: {
-                    totalRevenue: "Facturación Total",
-                    totalKg: "KG Totales Entregados",
-                    avgMargin: "Margen Promedio por KG",
-                    totalProfit: "Beneficio Total",
-                    growthRevenue: "Crecimiento Facturación",
-                    growthVol: "Crecimiento Volumen (KG)",
-                    marginPct: "% de Margen Global",
-                    marginGap: "Diferencia vs 2024",
-                    profitability: "Rentabilidad"
-                },
-                charts: {
-                    monthlyRevenue: "Facturación Mensual Comparativa",
-                    topClients: "Top 5 Clientes",
-                    topRecipes: "Top 5 Recetas (Volumen KG)",
-                    monthlyComp: "Comparativa Mensual",
-                    quarterly: "Crecimiento Trimestral",
-                    volEvolution: "Evolución Volumen (KG)",
-                    recipeDist: "Distribución por Receta",
-                    priceVsCost: "Evolución Precio vs Costo (Promedios Ponderados)",
-                    profitComp: "Composición Beneficio vs Costo",
-                    recipeProfit: "Rentabilidad por Receta"
-                },
-                table: {
-                    client: "Razón Social",
-                    sale: "Venta",
-                    growth: "Crecimiento",
-                    q: "Trimestre",
-                    change: "Cambio",
-                    concept: "Concept",
-                    price: "Precio Prom/KG",
-                    cost: "Costo Prom/KG",
-                    margin: "Margen/KG",
-                    marginPct: "% Margen",
-                    recipe: "Receta",
-                    profit: "Beneficio Total",
-                    branch: "Sucursal",
-                    avgVol: "Vol. Prom (Kg/Ticket)",
-                    totalVol: "Vol. Total (Kg)",
-                    opportunity: "Oportunidad",
-                    marginAbs: "Margen $",
-                    contribution: "Aportación",
-                    others: "Otros (Vol < 20kg)",
-                    eval: "Evaluación",
-                    variety: "Variedad / Mezcla",
-                    margin24: "Margen 2024",
-                    margin25: "Margen 2025"
-                },
-                obs: {
-                    general: "Observaciones Generales",
-                    growth: "Análisis de Crecimiento",
-                    margin: "Análisis de Rentabilidad",
-                    customers: "Insights de Clientes"
-                },
-                common: {
-                    downloadPdf: "Descargar Vista Actual",
-                    downloadFull: "Descargar Informe Completo",
-                    loading: "Cargando datos...",
-                    error: "Error cargando datos",
-                    year: "Año",
-                    price: "Precio",
-                    cost: "Costo",
-                    margin: "Margen",
-                    profit: "Beneficio",
-                    vs: "vs",
-                    generating: "Generando PDF...",
-                    allMonths: "Todos los Meses",
-                    groupBy: "Agrupar por",
-                    fiscalId: "Razón Social",
-                    location: "Sucursal",
-                    period: "Periodo",
-                    source: "Fuente"
-                },
-                strat: {
-                    mainTitle: "📊 Dashboard: Análisis de Margen",
-                    mainSub: "Comparativa 2024 vs 2025 | Actualizado: 11 de febrero 2026",
-                    alertTitle: "SITUACIÓN GENERAL",
-                    alertDesc: "Caída del margen: -15.98 puntos porcentuales",
-                    alertSub: "Margen actual 45.60% - Por debajo del umbral saludable de 50%",
-                    kpi1: "MARGEN PROMEDIO POR KG 2025",
-                    kpi1Sub: "↓ $34.08 vs 2024",
-                    kpi2: "% DE MARGEN GLOBAL 2025",
-                    kpi2Sub: "↓ -16.0 puntos",
-                    kpi3: "BENEFICIO TOTAL 2025",
-                    kpi3Sub: "↓ -7.6% vs 2024",
-                    kpi4: "MARGEN PERDIDO ANUAL",
-                    kpi4Sub: "$366K por mes",
-                    chart1Title: "Evolución Precio vs Costo (Promedios Ponderados)",
-                    insightTitle: "💡 Insight Clave",
-                    insightDesc: "La brecha sigue siendo significativa: El costo del café subió +54.4% (de $114/kg a $177/kg), pero el precio de venta solo aumentó +9.4% (de $291/kg a $318/kg). Esta diferencia de ~45 puntos porcentuales sin trasladar está erosionando tu margen.",
-                    table1Title: "Composición Beneficio vs Costo",
-                    change: "Cambio",
-                    chart2Title: "Impacto por Tipo de Café (Margen)",
-                    table3Title: "Top 5 Variedades por Beneficio Absoluto (2025)",
-                    table2Title: "Top 5 Clientes por Margen Absoluto (2025)",
-                    planTitle: "Plan de Acción sugerido",
-                    timelineTitle: "📅 Timeline de Implementación",
-                    p1: "PRIORIDAD 1", p1Title: "Ajuste de Precios Inmediato (próximos 30 días)",
-                    p2: "PRIORIDAD 2", p2Title: "Negociación con Proveedores",
-                    p3: "PRIORIDAD 3", p3Title: "Optimización del Mix",
-                    ctrl: "CONTROL Y MONITOREO", ctrlTitle: "Sistema de Seguimiento Continuo",
-                    warnTitle: "⚠️ Consecuencias de No Actuar",
-                    warnDesc: "A este ritmo, en 2026 tu margen podría caer por debajo del 30%, haciendo el negocio inviable. El costo del café sigue siendo volátil y podría subir más. Es mejor perder algunos clientes por precio que operar con márgenes insostenibles. Un negocio con margen del 40% es más frágil que uno con 55%, incluso si el segundo tiene menos ventas.",
-                    clickToHide: "Da click en un elemento de la leyenda para ocultarlo",
-                    lostMarginTitle: "💡 ¿De dónde sale el Margen Perdido de $4.39M?",
-                    lostMarginExp: "¿Cómo se calcula?",
-                    lostMarginDesc: "El margen perdido responde a esta pregunta: Si hubieras mantenido el mismo % de margen que tenías en 2024, ¿cuánto dinero extra tendrías hoy?",
-                    lostMarginStep1: "PASO 1: Margen esperado",
-                    lostMarginStep1Desc: "Ventas 2025 ($27.5M) × Margen 2024 (61.6%) = $16.92M",
-                    lostMarginStep2: "PASO 2: Margen real",
-                    lostMarginStep2Desc: "Margen REAL 2025 = $12.53M",
-                    lostMarginStep3: "PASO 3: La diferencia",
-                    lostMarginStep3Desc: "$16.92M - $12.53M = $4.39M",
-                    lostMarginViz1: "Margen esperado (61.6%)",
-                    lostMarginViz2: "Margen real (45.6%)",
-                    lostMarginVizGap: "Diferencia: $4.39M",
-                    lostMarginDaily1: "Por mes: $366K",
-                    lostMarginDaily2: "Por trimestre: $1.10M",
-                    lostMarginFinal: "\"Estas absorbiendo $4.39M de costos al año en lugar de transferirlos a lo que pagan los clientes.\"",
-                    marketProjTitle: "📊 Proyecciones del Mercado de Café 2026-2027",
-                    marketProjSub: "📈 Análisis de Tendencias Internacionales",
-                    marketContext: "Contexto de volatilidad: El mercado internacional del café presenta proyecciones divergentes para los próximos 12-24 meses, reflejando incertidumbre en factores climáticos, geopolíticos y de producción.",
-                    marketSources: [
-                        {name: "Banco Mundial (Octubre 2025)", items: ["2026: Reducción estimada del 13% en precios de café arábica", "2027: Descenso adicional del 5%", "Riesgos al alza: Clima en Brasil"]},
-                        {name: "WalletInvestor", items: ["Tendencia alcista sostenida: 10-15% anual", "2026: Precios estimados $110-122 MXN/kg", "Factores: Demanda estable y oferta limitada"]},
-                        {name: "Rabobank (Noviembre 2025)", items: ["Estabilización en rango amplio: $110-154 MXN/kg", "Volatilidad esperada por clima", "Abundantes cosechas podrían aliviar precios en 2026"]}
-                    ],
-                    marketConclTitle: "⚡ Conclusión para SSC Gourmet",
-                    marketConclDesc: "El consenso indica volatilidad continua con dos escenarios: Corrección del 10-15% o incrementos del 10-20%. Dado tu costo actual ($177/kg), un aumento del 10-20% te llevaría a $195-212/kg. Recomendación: Ajustes preventivos ahora.",
-                    steps: [
-                        {t: "Aumento base del 20-30%", d: "Para recuperar el margen perdido. Con la mejora de costos, un aumento del 25% te llevaría a un margen cercano al 55%."},
-                        {t: "Estrategia escalonada:", l: ["Inmediato (+20%): Clientes nuevos", "30 días (+15%): Contratos flexibles", "60-90 días (+10-15%): Clientes clave"]},
-                        {t: "Segmentación por sensibilidad:", l: ["Hoteles lujo (+25-30%)", "Restaurantes premium (+20-25%)", "Clientes sensibles (+15-20%)"]},
-                        {t: "Contratos a futuro", d: "Fija precios a 6-12 meses."},
-                        {t: "Descuentos por volumen", d: "Busca 5-10% de descuento."},
-                        {t: "Diversificación", d: "Ten 2-3 proveedores."},
-                        {t: "Promover premium", d: "Cold Brew (50.5%) y Espresso (45.8%) tienen mejor margen."},
-                        {t: "Revisar margen medio", d: "Grano (45.6%) y Filtro (45.1%) están al límite."},
-                        {t: "Dashboard semanal", d: "Alarma si baja de 43%."},
-                        {t: "Cláusulas de ajuste", d: "Si costo sube >20%, precio sube."}
-                    ],
-                    time: {
-                        w1: "Sem 1-2", prep: "Preparación", l1: ["Explicación costos", "Segmentación", "Nuevos contratos"],
-                        w3: "Sem 3-4", exec: "Ejecución", l2: ["Top 10 clientes", "Clientes nuevos", "Comunicado"],
-                        m2: "Mes 2", imp: "Implementación", l3: ["Aumentos", "Negociación prov.", "Monitoreo"],
-                        m3: "Mes 3", eval: "Evaluación", l4: ["Evaluar", "Ajustar", "Objetivo >55%"]
-                    }
-                }
-            },
-            fr: {
-                title: "Ventes 2024 - 2025",
-                subtitle: "Analyse des ventes et des marges",
-                footer: "SSC GOURMET DISTRIBUTION",
-                sourceInfo: "Informations combinées d'Odoo et Apsheet",
-                tabs: {
-                    dashboard: "Tableau de Bord",
-                    growth: "Croissance Générale",
-                    margin: "Marge & Rentabilité",
-                    customers: "Analyse Client",
-                    analysis: "Analyse de la Marge (Stratégique)"
-                },
-                kpis: {
-                    totalRevenue: "Chiffre d'Affaires Total",
-                    totalKg: "KG Totaux Livrés",
-                    avgMargin: "Marge Moyenne par KG",
-                    totalProfit: "Bénéfice Total",
-                    growthRevenue: "Croissance CA",
-                    growthVol: "Croissance Volume (KG)",
-                    marginPct: "% Marge Globale",
-                    marginGap: "Écart vs 2024",
-                    profitability: "Rentabilité"
-                },
-                charts: {
-                    monthlyRevenue: "Revenus Mensuels Comparatifs",
-                    topClients: "Top 5 Clients",
-                    topRecipes: "Top 5 Recettes (Volume KG)",
-                    monthlyComp: "Comparaison Mensuelle",
-                    quarterly: "Croissance Trimestrielle",
-                    volEvolution: "Évolution du Volume (KG)",
-                    recipeDist: "Répartition par Recette",
-                    priceVsCost: "Évolution Prix vs Coût (Moyennes Pondérées)",
-                    profitComp: "Composition Bénéfice vs Coût",
-                    recipeProfit: "Rentabilité par Recette"
-                },
-                table: {
-                    client: "Raison Sociale",
-                    sale: "Vente",
-                    growth: "Croissance",
-                    q: "Trimestre",
-                    change: "Chang.",
-                    concept: "Concept",
-                    price: "Prix Moy/KG",
-                    cost: "Coût Moy/KG",
-                    margin: "Marge/KG",
-                    marginPct: "% Marge",
-                    recipe: "Recette",
-                    profit: "Bénéfice Total",
-                    branch: "Succursale",
-                    avgVol: "Vol. Moy (Kg/Ticket)",
-                    totalVol: "Vol. Total (Kg)",
-                    opportunity: "Opportunité",
-                    marginAbs: "Marge $",
-                    contribution: "Contribution",
-                    others: "Autres (Vol < 20kg)",
-                    eval: "Évaluation",
-                    variety: "Variété / Mélange",
-                    margin24: "Marge 2024",
-                    margin25: "Marge 2025"
-                },
-                obs: {
-                    general: "Observations Générales",
-                    growth: "Analyse de la Croissance",
-                    margin: "Analyse de Rentabilité",
-                    customers: "Aperçu Client"
-                },
-                common: {
-                    downloadPdf: "Télécharger la Vue Actuelle",
-                    downloadFull: "Télécharger le Rapport Complet",
-                    loading: "Chargement des données...",
-                    error: "Erreur de chargement",
-                    year: "Année",
-                    price: "Prix",
-                    cost: "Coût",
-                    margin: "Marge",
-                    profit: "Bénéfice",
-                    vs: "vs",
-                    generating: "Génération du PDF...",
-                    allMonths: "Tous les mois",
-                    groupBy: "Grouper par",
-                    fiscalId: "Raison Sociale",
-                    location: "Succursale",
-                    period: "Période",
-                    source: "Source"
-                },
-                strat: {
-                    mainTitle: "📊 Tableau de Bord: Analyse de la Marge",
-                    mainSub: "Comparatif 2024 vs 2025 | Mis à jour: 11 février 2026",
-                    alertTitle: "SITUATION GÉNÉRALE",
-                    alertDesc: "Chute de la marge: -15.98 points de pourcentage",
-                    alertSub: "Marge actuelle 45.60% - En dessous du seuil sain de 50%",
-                    kpi1: "MARGE MOYENNE PAR KG 2025",
-                    kpi1Sub: "↓ 34.08$ vs 2024",
-                    kpi2: "% MARGE GLOBALE 2025",
-                    kpi2Sub: "↓ -16.0 points",
-                    kpi3: "BÉNÉFICE TOTAL 2025",
-                    kpi3Sub: "↓ -7.6% vs 2024",
-                    kpi4: "MARGE ANNUELLE PERDUE",
-                    kpi4Sub: "366K$ par mois",
-                    chart1Title: "Évolution Prix vs Coût (Moyennes Pondérées)",
-                    insightTitle: "💡 Insight Clé",
-                    insightDesc: "L'écart reste significatif : Le coût du café a augmenté de +54.4% (de 114$/kg à 177$/kg), mais le prix de vente n'a augmenté que de +9.4% (de 291$/kg à 318$/kg). Cet écart de ~45 points non répercuté érode votre marge.",
-                    table1Title: "Composition Bénéfice vs Coût",
-                    change: "Changement",
-                    chart2Title: "Marge par Type de Café",
-                    table3Title: "Top 5 Variétés par Bénéfice Absolu (2025)",
-                    table2Title: "Top 5 Clients par Marge Absolue (2025)",
-                    planTitle: "Plan d'Action Suggéré",
-                    timelineTitle: "📅 Calendrier de Mise en Œuvre",
-                    p1: "PRIORITÉ 1", p1Title: "Ajustement Immédiat des Prix (30 prochains jours)",
-                    p2: "PRIORITÉ 2", p2Title: "Négociation Fournisseurs",
-                    p3: "PRIORITÉ 3", p3Title: "Optimisation du Mix",
-                    ctrl: "CONTRÔLE ET SUIVI", ctrlTitle: "Système de Suivi Continu",
-                    warnTitle: "⚠️ Conséquences de l'Inaction",
-                    warnDesc: "À ce rythme, en 2026 votre marge pourrait tomber sous les 30%, rendant l'activité non viable. Le coût du café reste volatil. Il vaut mieux perdre quelques clients sur le prix que d'opérer avec des marges insoutenables.",
-                    clickToHide: "Cliquez sur un élément de la légende pour le masquer",
-                    lostMarginTitle: "💡 D'où vient la Marge Perdue de 4.39M$ ?",
-                    lostMarginExp: "Comment c'est calculé ?",
-                    lostMarginDesc: "La marge perdue répond à cette question : Si vous aviez maintenu le même % de marge qu'en 2024, combien d'argent supplémentaire auriez-vous aujourd'hui ?",
-                    lostMarginStep1: "ÉTAPE 1 : Marge attendue",
-                    lostMarginStep1Desc: "Ventes 2025 (27.5M$) × Marge 2024 (61.6%) = 16.92M$",
-                    lostMarginStep2: "ÉTAPE 2 : Marge réelle",
-                    lostMarginStep2Desc: "Marge RÉELLE 2025 = 12.53M$",
-                    lostMarginStep3: "ÉTAPE 3 : La différence",
-                    lostMarginStep3Desc: "16.92M$ - 12.53M$ = 4.39M$",
-                    lostMarginViz1: "Marge attendue (61.6%)",
-                    lostMarginViz2: "Marge réelle (45.6%)",
-                    lostMarginVizGap: "Différence : 4.39M$",
-                    lostMarginDaily1: "Par mois : 366K$",
-                    lostMarginDaily2: "Par trimestre : 1.10M$",
-                    lostMarginFinal: "\"Vous absorbez 4.39M$ de coûts par an au lieu de les transférer à ce que paient les clients.\"",
-                    marketProjTitle: "📊 Projections du Marché du Café 2026-2027",
-                    marketProjSub: "📈 Analyse des Tendances Internationales",
-                    marketContext: "Contexte de volatilité : Le marché international du café présente des projections divergentes pour les 12-24 prochains mois, reflétant l'incertitude des facteurs climatiques, géopolitiques et de production.",
-                    marketSources: [
-                        {name: "Banque Mondiale (Octobre 2025)", items: ["2026 : Réduction estimée de 13% des prix de l'arabica", "2027 : Baisse supplémentaire de 5%", "Risques haussiers : Climat au Brésil"]},
-                        {name: "WalletInvestor", items: ["Tendance haussière soutenue : 10-15% par an", "2026 : Prix estimés 110-122$ MXN/kg", "Facteurs : Demande stable et offre limitée"]},
-                        {name: "Rabobank (Novembre 2025)", items: ["Stabilisation dans une fourchette large : 110-154$ MXN/kg", "Volatilité attendue due au climat", "Récoltes abondantes pourraient soulager les prix en 2026"]}
-                    ],
-                    marketConclTitle: "⚡ Conclusion pour SSC Gourmet",
-                    marketConclDesc: "Le consensus indique une volatilité continue avec deux scénarios : Correction de 10-15% ou hausses de 10-20%. Vu votre coût actuel (177$/kg), une hausse de 10-20% vous mènerait à 195-212$/kg. Recommandation : Ajustements préventifs maintenant.",
-                    steps: [
-                        {t: "Augmentation de base de 20-30%", d: "Pour récupérer la marge perdue. Avec l'amélioration des coûts, une hausse de 25% vous ramènerait à une marge proche de 55%."},
-                        {t: "Stratégie échelonnée:", l: ["Immédiat (+20%): Nouveaux clients", "30 jours (+15%): Contrats flexibles", "60-90 jours (+10-15%): Clients clés"]},
-                        {t: "Segmentation par sensibilité:", l: ["Hôtels luxe (+25-30%)", "Restaurants premium (+20-25%)", "Clients sensibles (+15-20%)"]},
-                        {t: "Contrats à terme", d: "Fixez les prix à 6-12 mois."},
-                        {t: "Remises sur volume", d: "Visez 5-10% de remise."},
-                        {t: "Diversification", d: "Ayez 2-3 fournisseurs."},
-                        {t: "Promouvoir le premium", d: "Cold Brew (50.5%) et Espresso (45.8%) ont la meilleure marge."},
-                        {t: "Revoir la marge moyenne", d: "Grain (45.6%) et Filtre (45.1%) sont à la limite."},
-                        {t: "Tableau de bord hebdo", d: "Alerte si <43%."},
-                        {t: "Clauses d'ajustement", d: "Si coût >20%, prix monte."}
-                    ],
-                    time: {
-                        w1: "Sem 1-2", prep: "Préparation", l1: ["Explication coûts", "Segmentation", "Nouveaux contrats"],
-                        w3: "Sem 3-4", exec: "Exécution", l2: ["Top 10 clients", "Nouveaux clients", "Communication"],
-                        m2: "Mois 2", imp: "Mise en œuvre", l3: ["Augmentations", "Négociation fourn.", "Suivi"],
-                        m3: "Mois 3", eval: "Évaluation", l4: ["Évaluer", "Ajuster", "Obj >55%"]
-                    }
-                }
-            }
-        };
-
-        // --- ICONS ---
         const Icon = ({ name, className }) => {
             const icons = {
                 dollar: <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />,
@@ -564,18 +120,58 @@
             );
         };
 
-        // --- CONSTANTS ---
+        // 2. CONSTANTS
         const API_URL = "https://script.google.com/macros/s/AKfycbyNBTYR5Wzcb3NH6l9dwjSd_PP6L7EX0wZC1AyPZfGrn7fV8S4OnrAcQwlSwrVSK97w/exec";
-        const COLORS = {
-            year2024: "#4169E1", year2024Light: "#93c5fd",
-            year2025: "#9333EA", year2025Light: "#d8b4fe",
-            positive: "#10b981", negative: "#ef4444", grid: "#e2e8f0"
-        };
+        const COLORS = { year2024: "#4169E1", year2025: "#9333EA", positive: "#10b981", negative: "#ef4444", grid: "#e2e8f0" };
         const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        const EXCHANGE_RATES = { MXN: 1, USD: 0.05, EUR: 0.045 };
 
-        // --- UTILS ---
-        const formatCurrency = (val, lang = 'es') => new Intl.NumberFormat(lang === 'es' ? 'es-MX' : 'fr-FR', { style: 'currency', currency: 'MXN' }).format(val);
-        const formatNumber = (val, lang = 'es') => new Intl.NumberFormat(lang === 'es' ? 'es-MX' : 'fr-FR', { maximumFractionDigits: 2 }).format(val);
+        const TRANSLATIONS = {
+            es: {
+                subtitle: "Análisis de venta y márgenes 2024 - 2025",
+                footer: "SSC GOURMET DISTRIBUTION",
+                tabDesc: { dashboard: "Resumen ejecutivo de KPIs", growth: "Análisis de crecimiento", margin: "Rentabilidad y costos", customers: "Rentabilidad por cliente", analysis: "Visión estratégica" },
+                tabs: { dashboard: "Dashboard General", growth: "Crecimiento General", margin: "Margen & Rentabilidad", customers: "Análisis por Cliente", analysis: "Análisis de Margen (Estratégico)" },
+                kpis: { totalRevenue: "Facturación Total", totalKg: "KG Totales Entregados", avgMargin: "Margen Promedio por KG", totalProfit: "Beneficio Total", growthRevenue: "Crecimiento Facturación", growthVol: "Crecimiento Volumen (KG)", marginPct: "% de Margen Global", marginGap: "Diferencia vs 2024", profitability: "Rentabilidad" },
+                charts: { monthlyRevenue: "Facturación Mensual Comparativa", topClients: "Top 5 Clientes", topRecipes: "Top 5 Recetas (Volumen KG)", monthlyComp: "Comparativa Mensual", quarterly: "Crecimiento Trimestral", priceVsCost: "Evolución Precio vs Costo", profitComp: "Composición Beneficio vs Costo" },
+                table: { client: "Razón Social", sale: "Venta", growth: "Crecimiento", q: "Trimestre", change: "Cambio", concept: "Concepto", price: "Precio Prom/KG", cost: "Costo Prom/KG", margin: "Margen/KG", marginPct: "% Margen", recipe: "Receta", profit: "Beneficio Total", branch: "Sucursal", avgVol: "Vol. Prom (Kg/Ticket)", totalVol: "Vol. Total (Kg)", opportunity: "Oportunidad", marginAbs: "Margen $", contribution: "Aportación", others: "Otros (Vol < 20kg)", eval: "Evaluación", variety: "Variedad / Mezcla", margin24: "Margen 2024", margin25: "Margen 2025" },
+                obs: { general: "Observaciones Generales", growth: "Análisis de Crecimiento", margin: "Análisis de Rentabilidad", customers: "Insights de Clientes" },
+                common: { downloadPdf: "Descargar Vista Actual", downloadFull: "Descargar Informe Completo", loading: "Cargando datos...", error: "Error cargando datos", year: "Año", price: "Precio", cost: "Costo", margin: "Margen", profit: "Beneficio", vs: "vs", generating: "Generando PDF...", allMonths: "Todos los Meses", groupBy: "Agrupar por", fiscalId: "Razón Social", location: "Sucursal", period: "Periodo", source: "Fuente", currency: "Divisa", exchangeRate: "Tipo de Cambio" },
+                strat: { mainTitle: "📊 Dashboard: Análisis de Margen", mainSub: "Comparativa 2024 vs 2025", alertTitle: "SITUACIÓN GENERAL", alertDesc: "Caída dramática del margen", alertSub: "Margen actual 45.60% - Por debajo del umbral saludable", kpi1: "MARGEN PROMEDIO KG 2025", kpi1Sub: "↓ $34.08 vs 2024", kpi2: "% MARGEN GLOBAL 2025", kpi2Sub: "↓ -16.0 pts", kpi3: "BENEFICIO TOTAL 2025", kpi3Sub: "↓ -7.6% vs 2024", kpi4: "MARGEN PERDIDO ANUAL", kpi4Sub: "$366K por mes", chart1Title: "Evolución Precio vs Costo", clickToHide: "Da click en la leyenda para ocultar", lostMarginTitle: "¿De dónde sale el Margen Perdido?", lostMarginExp: "¿Cómo se calcula?", lostMarginDesc: "Si hubieras mantenido el mismo % de margen que en 2024, ¿cuánto dinero extra tendrías?", lostMarginStep1: "PASO 1: Margen esperado", lostMarginStep1Desc: "Ventas 2025 × Margen 2024", lostMarginStep2: "PASO 2: Margen real", lostMarginStep2Desc: "Margen REAL 2025", lostMarginStep3: "PASO 3: Diferencia", lostMarginStep3Desc: "Esperado - Real", lostMarginViz1: "Esperado (61.6%)", lostMarginViz2: "Real (45.6%)", lostMarginVizGap: "Diferencia", lostMarginDaily1: "Por mes", lostMarginDaily2: "Por trimestre", lostMarginFinal: "Estás absorbiendo costos en lugar de transferirlos.", chart2Title: "Margen por Tipo", table3Title: "Top 5 Variedades por Beneficio", table2Title: "Top 5 Clientes por Margen", planTitle: "Plan de Acción", timelineTitle: "Timeline", p1: "PRIORIDAD 1", p1Title: "Ajuste Precios", p2: "PRIORIDAD 2", p2Title: "Negociación", p3: "PRIORIDAD 3", p3Title: "Optimización Mix", ctrl: "CONTROL", ctrlTitle: "Monitoreo", warnTitle: "Consecuencias", warnDesc: "Riesgo de inviabilidad si no se actúa.", marketProjTitle: "Proyecciones Mercado 2026", marketProjSub: "Tendencias Internacionales", marketContext: "Volatilidad esperada.", marketSources: [{name: "Banco Mundial", items: ["Baja estimada en arábica"]}, {name: "WalletInvestor", items: ["Tendencia alcista"]}, {name: "Rabobank", items: ["Estabilización"]}], marketConclTitle: "Conclusión", marketConclDesc: "Ajustes preventivos recomendados.", steps: [{t:"Aumento base",d:"Recuperar margen perdido"},{t:"Estrategia escalonada",l:["Inmediato: Nuevos","30 días: Flexibles"]},{t:"Contratos",d:"Fijar a 6-12 meses"}], time: {w1:"Sem 1-2", prep:"Prep", l1:["Análisis costos"], w3:"Sem 3-4", exec:"Ejec", l2:["Comunicación"], m2:"Mes 2", imp:"Imp", l3:["Aumentos"], m3:"Mes 3", eval:"Eval", l4:["Ajuste"]}}
+            },
+            fr: {
+                subtitle: "Analyse des ventes et marges 2024 - 2025", footer: "SSC GOURMET DISTRIBUTION", tabDesc: { dashboard: "Résumé exécutif", growth: "Analyse de croissance", margin: "Rentabilité et coûts", customers: "Rentabilité par client", analysis: "Vision stratégique" },
+                tabs: { dashboard: "Tableau de Bord", growth: "Croissance Générale", margin: "Marge & Rentabilité", customers: "Analyse Client", analysis: "Analyse de la Marge (Stratégique)" },
+                kpis: { totalRevenue: "Chiffre d'Affaires Total", totalKg: "KG Totaux Livrés", avgMargin: "Marge Moyenne par KG", totalProfit: "Bénéfice Total", growthRevenue: "Croissance CA", growthVol: "Croissance Volume (KG)", marginPct: "% Marge Globale", marginGap: "Écart vs 2024", profitability: "Rentabilité" },
+                charts: { monthlyRevenue: "Revenus Mensuels Comparatifs", topClients: "Top 5 Clients", topRecipes: "Top 5 Recettes", monthlyComp: "Comparaison Mensuelle", quarterly: "Croissance Trimestrielle", priceVsCost: "Évolution Prix vs Coût", profitComp: "Composition Bénéfice vs Coût" },
+                table: { client: "Raison Sociale", sale: "Vente", growth: "Croissance", q: "Trimestre", change: "Chang.", concept: "Concept", price: "Prix Moy/KG", cost: "Coût Moy/KG", margin: "Marge/KG", marginPct: "% Marge", recipe: "Recette", profit: "Bénéfice Total", branch: "Succursale", avgVol: "Vol. Moy", totalVol: "Vol. Total", opportunity: "Opportunité", marginAbs: "Marge $", contribution: "Contribution", others: "Autres", eval: "Évaluation", variety: "Variété", margin24: "Marge 2024", margin25: "Marge 2025" },
+                obs: { general: "Observations Générales", growth: "Analyse Croissance", margin: "Analyse Rentabilité", customers: "Aperçu Client" },
+                common: { downloadPdf: "Télécharger Vue", downloadFull: "Télécharger Rapport Complet", loading: "Chargement...", error: "Erreur", year: "Année", price: "Prix", cost: "Coût", margin: "Marge", profit: "Bénéfice", vs: "vs", generating: "Génération...", allMonths: "Tous les mois", groupBy: "Grouper par", fiscalId: "Raison Sociale", location: "Succursale", period: "Période", source: "Source", currency: "Devise", exchangeRate: "Taux" },
+                strat: { mainTitle: "📊 Tableau de Bord Marge", mainSub: "Comparatif 2024 vs 2025", alertTitle: "SITUATION GÉNÉRALE", alertDesc: "Chute dramatique marge", alertSub: "Marge actuelle 45.60% - Critique", kpi1: "MARGE MOYENNE KG 2025", kpi1Sub: "↓ 34.08$ vs 2024", kpi2: "% MARGE GLOBALE", kpi2Sub: "↓ -16.0 pts", kpi3: "BÉNÉFICE TOTAL", kpi3Sub: "↓ -7.6%", kpi4: "MARGE PERDUE", kpi4Sub: "366K$ par mois", chart1Title: "Évolution Prix vs Coût", clickToHide: "Cliquez pour masquer", lostMarginTitle: "D'où vient la Marge Perdue ?", lostMarginExp: "Calcul ?", lostMarginDesc: "Si vous aviez gardé la marge 2024, combien auriez-vous ?", lostMarginStep1: "ÉTAPE 1 : Marge attendue", lostMarginStep1Desc: "Ventes 2025 x Marge 2024", lostMarginStep2: "ÉTAPE 2 : Marge réelle", lostMarginStep2Desc: "Marge RÉELLE 2025", lostMarginStep3: "ÉTAPE 3 : Différence", lostMarginStep3Desc: "Attendue - Réelle", lostMarginViz1: "Attendue (61.6%)", lostMarginViz2: "Réelle (45.6%)", lostMarginVizGap: "Différence", lostMarginDaily1: "Par mois", lostMarginDaily2: "Par trimestre", lostMarginFinal: "Vous absorbez des coûts au lieu de les transférer.", chart2Title: "Marge par Type", table3Title: "Top 5 Variétés", table2Title: "Top 5 Clients Marge", planTitle: "Plan d'Action", timelineTitle: "Calendrier", p1: "PRIORITÉ 1", p1Title: "Ajustement Prix", p2: "PRIORITÉ 2", p2Title: "Négociation", p3: "PRIORITÉ 3", p3Title: "Optimisation Mix", ctrl: "CONTRÔLE", ctrlTitle: "Suivi", warnTitle: "Conséquences", warnDesc: "Risque d'invabilité.", marketProjTitle: "Projections Marché 2026", marketProjSub: "Tendances", marketContext: "Volatilité attendue.", marketSources: [{name: "Banque Mondiale", items: ["Baisse estimée arábica"]}, {name: "WalletInvestor", items: ["Hausse soutenue"]}, {name: "Rabobank", items: ["Stabilisation"]}], marketConclTitle: "Conclusion", marketConclDesc: "Ajustements préventifs recommandés.", steps: [{t:"Augmentation base",d:"Récupérer marge"},{t:"Stratégie échelonnée",l:["Immédiat","30 jours"]}], time: {w1:"Sem 1-2", prep:"Prép", l1:["Analyse coûts"], w3:"Sem 3-4", exec:"Exéc", l2:["Comm"], m2:"Mois 2", imp:"Mise en œuvre", l3:["Hausse"], m3:"Mois 3", eval:"Éval", l4:["Ajuster"]}}
+            },
+            en: {
+                subtitle: "Sales and Margin Analysis 2024 - 2025", footer: "SSC GOURMET DISTRIBUTION", tabDesc: { dashboard: "KPI Executive Summary", growth: "Growth Analysis", margin: "Profitability Breakdown", customers: "Customer Profitability", analysis: "Strategic Vision" },
+                tabs: { dashboard: "General Dashboard", growth: "General Growth", margin: "Margin & Profitability", customers: "Customer Analysis", analysis: "Margin Analysis (Strategic)" },
+                kpis: { totalRevenue: "Total Revenue", totalKg: "Total KG Delivered", avgMargin: "Avg Margin per KG", totalProfit: "Total Profit", growthRevenue: "Revenue Growth", growthVol: "Volume Growth (KG)", marginPct: "% Global Margin", marginGap: "Difference vs 2024", profitability: "Profitability" },
+                charts: { monthlyRevenue: "Monthly Revenue Comparison", topClients: "Top 5 Clients", topRecipes: "Top 5 Recipes", monthlyComp: "Monthly Comparison", quarterly: "Quarterly Growth", priceVsCost: "Price vs Cost Evolution", profitComp: "Profit vs Cost Composition" },
+                table: { client: "Legal Entity", sale: "Sale", growth: "Growth", q: "Quarter", change: "Change", concept: "Concept", price: "Avg Price/KG", cost: "Avg Cost/KG", margin: "Margin/KG", marginPct: "% Margin", recipe: "Recipe", profit: "Total Profit", branch: "Branch", avgVol: "Avg Vol", totalVol: "Total Vol", opportunity: "Opportunity", marginAbs: "Margin $", contribution: "Contribution", others: "Others", eval: "Evaluation", variety: "Variety", margin24: "Margin 2024", margin25: "Margin 2025" },
+                obs: { general: "General Observations", growth: "Growth Analysis", margin: "Profitability Analysis", customers: "Customer Insights" },
+                common: { downloadPdf: "Download View", downloadFull: "Download Full Report", loading: "Loading...", error: "Error", year: "Year", price: "Price", cost: "Cost", margin: "Margin", profit: "Profit", vs: "vs", generating: "Generating...", allMonths: "All Months", groupBy: "Group by", fiscalId: "Legal Entity", location: "Branch", period: "Period", source: "Source", currency: "Currency", exchangeRate: "Rate" },
+                strat: { mainTitle: "📊 Dashboard: Margin Analysis", mainSub: "Comparison 2024 vs 2025", alertTitle: "GENERAL SITUATION", alertDesc: "Dramatic margin drop", alertSub: "Current margin 45.60% - Critical", kpi1: "AVG MARGIN KG 2025", kpi1Sub: "↓ $34.08 vs 2024", kpi2: "% GLOBAL MARGIN", kpi2Sub: "↓ -16.0 pts", kpi3: "TOTAL PROFIT 2025", kpi3Sub: "↓ -7.6%", kpi4: "ANNUAL LOST MARGIN", kpi4Sub: "$366K per month", chart1Title: "Price vs Cost Evolution", clickToHide: "Click to hide", lostMarginTitle: "Where does Lost Margin come from?", lostMarginExp: "How is it calculated?", lostMarginDesc: "If you kept 2024 margin, how much extra money would you have?", lostMarginStep1: "STEP 1: Expected Margin", lostMarginStep1Desc: "Sales 2025 x Margin 2024", lostMarginStep2: "STEP 2: Real Margin", lostMarginStep2Desc: "REAL Margin 2025", lostMarginStep3: "STEP 3: Difference", lostMarginStep3Desc: "Expected - Real", lostMarginViz1: "Expected (61.6%)", lostMarginViz2: "Real (45.6%)", lostMarginVizGap: "Difference", lostMarginDaily1: "Per month", lostMarginDaily2: "Per quarter", lostMarginFinal: "You are absorbing costs instead of passing them on.", chart2Title: "Margin by Type", table3Title: "Top 5 Varieties", table2Title: "Top 5 Clients Margin", planTitle: "Action Plan", timelineTitle: "Timeline", p1: "PRIORITY 1", p1Title: "Price Adj", p2: "PRIORITY 2", p2Title: "Negotiation", p3: "PRIORITY 3", p3Title: "Mix Opt", ctrl: "CONTROL", ctrlTitle: "Monitoring", warnTitle: "Consequences", warnDesc: "Risk of unviability.", marketProjTitle: "Market Projections 2026", marketProjSub: "Global Trends", marketContext: "Volatility expected.", marketSources: [{name: "World Bank", items: ["Est. decrease Arabica"]}, {name: "WalletInvestor", items: ["Upward trend"]}, {name: "Rabobank", items: ["Stabilization"]}], marketConclTitle: "Conclusion", marketConclDesc: "Preventive adjustments recommended.", steps: [{t:"Base increase",d:"Recover margin"},{t:"Staggered strategy",l:["Immediate","30 days"]}], time: {w1:"Wk 1-2", prep:"Prep", l1:["Cost analysis"], w3:"Wk 3-4", exec:"Exec", l2:["Comm"], m2:"Month 2", imp:"Imp", l3:["Increases"], m3:"Month 3", eval:"Eval", l4:["Adjust"]}}
+            }
+        };
+
+        // 3. UTILS
+        const formatCurrency = (val, lang = 'es', currency = 'MXN') => {
+            const rate = EXCHANGE_RATES[currency] || 1;
+            const convertedVal = val * rate;
+            let locale = lang === 'en' ? 'en-US' : (lang === 'fr' ? 'fr-FR' : 'es-MX');
+            return new Intl.NumberFormat(locale, { style: 'currency', currency: currency }).format(convertedVal);
+        };
+        const formatNumber = (val, lang = 'es') => {
+            let locale = lang === 'en' ? 'en-US' : (lang === 'fr' ? 'fr-FR' : 'es-MX');
+            return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(val);
+        };
         const parseDate = (dateStr) => {
             if (!dateStr) return new Date();
             let s = String(dateStr); if (s.includes('T')) s = s.split('T')[0];
@@ -584,7 +180,203 @@
             return new Date(dateStr);
         };
 
-        // --- COMPONENTS ---
+        // 4. SUB-COMPONENTS
+        const NavButton = ({ id, label, icon, active, set }) => (
+            <button onClick={() => set(id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left ${active === id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <Icon name={icon} className="w-5 h-5 flex-shrink-0" /><span className="font-medium text-sm">{label}</span>
+            </button>
+        );
+
+        const KPICard = ({ title, value, subValue, icon, isPositive }) => (
+            <div className="metric-card">
+                <div className="z-10 relative">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{title}</p><h3 className="text-2xl font-bold text-gray-800">{value}</h3>
+                    {subValue && <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}><span>{isPositive ? '↑' : '↓'}</span><span>{subValue}</span></div>}
+                </div>
+                <div className={`p-3 rounded-lg flex-shrink-0 absolute top-4 right-4 ${isPositive === false ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}><Icon name={icon} className="w-6 h-6" /></div>
+            </div>
+        );
+
+        const InsightBox = ({ title, insights }) => (
+            <div className="insight-box mt-8">
+                <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Icon name="dashboard" className="w-5 h-5 text-blue-500" />{title}</h4>
+                <ul className="space-y-3">{insights.map((insight, idx) => <li key={idx} className="flex items-start gap-3 text-sm text-slate-600"><span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-2 flex-shrink-0"></span>{insight}</li>)}</ul>
+            </div>
+        );
+
+        const MarginLostExplanation = ({ t, lang, currency }) => {
+            const [isExpanded, setIsExpanded] = useState(false);
+            return (
+                <div className="mt-6 mb-6">
+                    <button onClick={() => setIsExpanded(!isExpanded)} className="w-full flex items-center justify-between bg-blue-50 hover:bg-blue-100 p-4 rounded-xl border border-blue-200 transition-all group">
+                        <div className="flex items-center gap-3"><div className="p-2 bg-blue-500 rounded-full text-white"><Icon name="chart" className="w-5 h-5"/></div><span className="font-bold text-blue-800 text-lg">{t.strat.lostMarginExp}</span></div>
+                        <Icon name={isExpanded ? "chevronUp" : "chevronDown"} className="w-5 h-5 text-blue-600" />
+                    </button>
+                    {isExpanded && (
+                        <div className="mt-3 p-6 bg-gradient-to-br from-sky-50 to-white border-l-[6px] border-sky-600 rounded-r-xl shadow-inner animate-fade-in">
+                            <h3 className="text-xl font-bold text-sky-900 mb-4 flex items-center gap-2">{t.strat.lostMarginTitle.replace('$4.39M', formatCurrency(4390000, lang, currency))}</h3>
+                            <p className="text-sky-800 mb-6 font-medium text-lg leading-relaxed">{t.strat.lostMarginDesc}</p>
+                            <div className="grid md:grid-cols-2 gap-8 mb-8">
+                                <div className="bg-white p-5 rounded-lg shadow-sm border border-sky-100">
+                                    <h4 className="font-bold text-gray-700 mb-3 border-b pb-2">{t.strat.lostMarginStep1}</h4><p className="text-sm text-gray-600 font-mono">{t.strat.lostMarginStep1Desc}</p>
+                                    <h4 className="font-bold text-gray-700 mt-4 mb-3 border-b pb-2">{t.strat.lostMarginStep2}</h4><p className="text-sm text-gray-600 font-mono">{t.strat.lostMarginStep2Desc}</p>
+                                    <h4 className="font-bold text-red-600 mt-4 mb-3 border-b border-red-100 pb-2">{t.strat.lostMarginStep3}</h4><p className="text-lg font-bold text-red-600 font-mono">{t.strat.lostMarginStep3Desc}</p>
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <div className="mb-6"><div className="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>{t.strat.lostMarginViz1}</span><span>{formatCurrency(16920000, lang, currency)}</span></div><div className="w-full bg-gray-200 rounded-full h-6"><div className="bg-green-500 h-6 rounded-full" style={{width: '100%'}}></div></div></div>
+                                    <div className="mb-2"><div className="flex justify-between text-sm font-bold text-gray-600 mb-1"><span>{t.strat.lostMarginViz2}</span><span>{formatCurrency(12530000, lang, currency)}</span></div><div className="w-full bg-gray-200 rounded-full h-6 relative"><div className="bg-red-500 h-6 rounded-l-full absolute top-0 left-0" style={{width: '74%'}}></div><div className="h-6 absolute top-0 right-0 border-l-2 border-dashed border-gray-400 flex items-center justify-center text-xs text-gray-500 font-bold" style={{width: '26%'}}>{t.strat.lostMarginVizGap}: {formatCurrency(4390000, lang, currency)}</div></div></div>
+                                </div>
+                            </div>
+                            <div className="bg-sky-100 p-4 rounded-lg border border-sky-200 text-sky-800 text-sm font-medium italic">{t.strat.lostMarginFinal}</div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // 5. VIEW COMPONENTS
+        const DashboardView = ({ data, t, lang, currency }) => {
+            const { totals, monthly, clients } = data;
+            const salesGrowthPct = totals.sales2024 > 0 ? ((totals.sales2025 - totals.sales2024) / totals.sales2024) * 100 : 0;
+            const kgGrowthPct = totals.kg2024 > 0 ? ((totals.kg2025 - totals.kg2024) / totals.kg2024) * 100 : 0;
+            const marginDiff = totals.avgMarginPerKg2025 - totals.avgMarginPerKg2024;
+            const profitGrowthPct = totals.profit2024 > 0 ? ((totals.profit2025 - totals.profit2024) / totals.profit2024) * 100 : 0;
+            const marginDiffText = `${marginDiff >= 0 ? '+' : ''}${formatCurrency(marginDiff, lang, currency)}`;
+
+            return (
+                <div className="animate-fade-in space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <KPICard title={`${t.kpis.totalRevenue} 2025`} value={formatCurrency(totals.sales2025, lang, currency)} subValue={`${salesGrowthPct.toFixed(1)}%`} isPositive={salesGrowthPct > 0} icon="dollar" />
+                        <KPICard title={`${t.kpis.totalKg} 2025`} value={`${formatNumber(totals.kg2025, lang)} kg`} subValue={`${kgGrowthPct.toFixed(1)}%`} isPositive={kgGrowthPct > 0} icon="scale" />
+                        <KPICard title={t.kpis.avgMargin} value={formatCurrency(totals.avgMarginPerKg2025, lang, currency)} subValue={marginDiffText} isPositive={marginDiff >= 0} icon="chart" />
+                        <KPICard title={t.kpis.totalProfit} value={formatCurrency(totals.profit2025, lang, currency)} subValue={`${profitGrowthPct.toFixed(1)}%`} isPositive={profitGrowthPct > 0} icon="trendingUp" />
+                    </div>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 className="font-bold text-gray-700 mb-6">{t.charts.monthlyRevenue}</h3>
+                            <div className="h-72"><ResponsiveContainer><LineChart data={monthly}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="name"/><YAxis tickFormatter={(v) => formatNumber(v * (EXCHANGE_RATES[currency] || 1) / 1000, lang) + 'k'}/><Tooltip formatter={(v)=>formatCurrency(v,lang, currency)}/><Legend/><Line type="monotone" dataKey="sales2024" stroke={COLORS.year2024}/><Line type="monotone" dataKey="sales2025" stroke={COLORS.year2025}/></LineChart></ResponsiveContainer></div>
+                        </div>
+                        <div className="w-full lg:w-2/5 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h3 className="font-bold text-gray-700 mb-6">{t.charts.topClients}</h3>
+                            <div className="overflow-x-auto"><table className="w-full text-xs md:text-sm text-left text-gray-500"><thead className="text-xs text-gray-700 uppercase bg-gray-50"><tr><th className="px-3 py-2 rounded-l-lg">{t.table.client}</th><th className="px-3 py-2 text-right">{t.table.sale}</th><th className="px-3 py-2 text-right rounded-r-lg">{t.table.growth}</th></tr></thead><tbody>{clients.slice(0, 5).map((client, idx) => { const growth = client.sales2024 > 0 ? ((client.sales2025 - client.sales2024) / client.sales2024) * 100 : 100; return (<tr key={idx} className="border-b hover:bg-gray-50"><td className="px-3 py-2 font-medium text-gray-900 text-xs md:text-sm whitespace-normal break-words" title={client.name}>{client.name}</td><td className="px-3 py-2 text-right">{formatCurrency(client.sales2025, lang, currency)}</td><td className={`px-3 py-2 text-right font-bold ${growth >= 0 ? 'text-green-600' : 'text-red-500'}`}>{growth >= 0 ? '↑' : '↓'} {Math.abs(growth).toFixed(0)}%</td></tr>); })}</tbody></table></div>
+                        </div>
+                    </div>
+                    <InsightBox title={t.obs.general} insights={[`${t.kpis.growthRevenue}: ${salesGrowthPct.toFixed(1)}% ${t.common.vs} 2024.`]} />
+                </div>
+            );
+        };
+
+        const GrowthView = ({ data, t, lang, currency }) => {
+            const { monthly, totals } = data;
+            const quarters = [{name:'Q1',months:[0,1,2]},{name:'Q2',months:[3,4,5]},{name:'Q3',months:[6,7,8]},{name:'Q4',months:[9,10,11]}].map(q => { const s24=q.months.reduce((a,m)=>a+monthly[m].sales2024,0); const s25=q.months.reduce((a,m)=>a+monthly[m].sales2025,0); return {name:q.name,sales2024:s24,sales2025:s25,pct:s24>0?((s25-s24)/s24)*100:0}; });
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><KPICard title={t.kpis.growthRevenue} value={formatCurrency(totals.sales2025 - totals.sales2024, lang, currency)} isPositive={true} icon="dollar" /><KPICard title={t.kpis.growthVol} value={`${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg`} isPositive={true} icon="scale" /></div>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.monthlyComp}</h3><div className="h-64"><ResponsiveContainer><BarChart data={monthly}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis tickFormatter={(v) => formatNumber(v * (EXCHANGE_RATES[currency] || 1) / 1000, lang) + 'k'}/><Tooltip formatter={(v)=>formatCurrency(v,lang, currency)}/><Bar dataKey="sales2024" fill={COLORS.year2024}/><Bar dataKey="sales2025" fill={COLORS.year2025}/></BarChart></ResponsiveContainer></div></div>
+                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.quarterly}</h3><table className="w-full text-xs md:text-sm"><thead className="bg-gray-50 text-gray-600"><tr><th className="px-3 py-2 text-left">{t.table.q}</th><th className="px-3 py-2 text-right">2024</th><th className="px-3 py-2 text-right">2025</th><th className="px-3 py-2 text-right">{t.table.change}</th></tr></thead><tbody>{quarters.map((q,i)=>(<tr key={i} className="border-b"><td className="px-3 py-2 font-medium">{q.name}</td><td className="px-3 py-2 text-right">{formatCurrency(q.sales2024,lang, currency)}</td><td className="px-3 py-2 text-right">{formatCurrency(q.sales2025,lang, currency)}</td><td className={`px-3 py-2 text-right font-bold ${q.pct>=0?'text-green-600':'text-red-500'}`}>{q.pct.toFixed(1)}%</td></tr>))}</tbody></table></div>
+                    </div>
+                </div>
+            );
+        };
+
+        const MarginView = ({ data, t, lang, currency }) => {
+            const { monthly, totals } = data;
+            const [selectedYear, setSelectedYear] = useState('2025');
+            const marginChange = totals.avgMarginPerKg2025 - totals.avgMarginPerKg2024;
+            const marginPctChange = totals.marginPct2025 - totals.marginPct2024;
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <KPICard title={t.kpis.avgMargin} value={formatCurrency(totals.avgMarginPerKg2025, lang, currency)} subValue={formatCurrency(marginChange, lang, currency)} isPositive={marginChange >= 0} icon="dollar" />
+                        <KPICard title={t.kpis.marginPct} value={`${totals.marginPct2025.toFixed(1)}%`} subValue={`${marginPctChange.toFixed(1)}%`} isPositive={marginPctChange >= 0} icon="chart" />
+                        <KPICard title={t.kpis.totalProfit} value={formatCurrency(totals.profit2025, lang, currency)} isPositive={true} icon="trendingUp" />
+                    </div>
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative"><div className="flex justify-between items-center mb-6"><h3 className="font-bold text-gray-700">{t.charts.priceVsCost}</h3><div className="flex bg-gray-100 rounded-lg p-1"><button onClick={()=>setSelectedYear('2024')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2024'?'bg-white shadow text-blue-600':''}`}>2024</button><button onClick={()=>setSelectedYear('2025')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2025'?'bg-white shadow text-purple-600':''}`}>2025</button></div></div><div className="h-80"><ResponsiveContainer><AreaChart data={monthly}><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} stopOpacity={0.2}/><stop offset="95%" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis tickFormatter={(v)=>formatNumber(v * (EXCHANGE_RATES[currency] || 1), lang)}/><Tooltip formatter={(v)=>formatCurrency(v,lang, currency)}/><Area type="monotone" dataKey={`avgCost${selectedYear}`} stroke="#ef4444" fill="transparent" strokeDasharray="5 5"/><Area type="monotone" dataKey={`avgPrice${selectedYear}`} stroke={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} fill="url(#g)"/></AreaChart></ResponsiveContainer></div></div>
+                </div>
+            );
+        };
+
+        const CustomersView = ({ rawData, t, lang, isPdfMode, currency }) => {
+            const [selectedYears, setSelectedYears] = useState(['2024']);
+            const [startMonth, setStartMonth] = useState(0);
+            const [endMonth, setEndMonth] = useState(11);
+            const [groupBy, setGroupBy] = useState('fiscal_id');
+            const [sortConfig, setSortConfig] = useState({ key: 'profit', direction: 'desc' });
+            const [othersExpanded, setOthersExpanded] = useState(false);
+            
+            const handleSort = (key) => setSortConfig({ key, direction: sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc' });
+            const getSortIcon = (key) => sortConfig.key !== key ? <span className="ml-1 text-gray-300">↕</span> : (sortConfig.direction === 'asc' ? <span className="ml-1 text-blue-600">↑</span> : <span className="ml-1 text-blue-600">↓</span>);
+            const toggleYear = (year) => { if (selectedYears.includes(year)) { if (selectedYears.length > 1) setSelectedYears(selectedYears.filter(y => y !== year)); } else { setSelectedYears([...selectedYears, year]); } };
+
+            const { customerData, summary, othersData } = useMemo(() => {
+                const grouped = {};
+                let totalFilteredProfit = 0;
+                rawData.forEach(item => {
+                    const date = parseDate(item.invoice_date);
+                    const year = String(date.getFullYear());
+                    const month = date.getMonth();
+                    if (!selectedYears.includes(year)) return;
+                    if (month < startMonth || month > endMonth) return;
+                    let key = groupBy === 'fiscal_id' ? (item.client_fiscal_id || "N/A") : (item.client_location || "N/A");
+                    if (!grouped[key]) grouped[key] = { name: key, totalRevenue: 0, totalCost: 0, totalKg: 0, invoiceCount: new Set() };
+                    const sale = parseFloat(String(item.item_sale).replace(/[$,]/g, '')) || 0;
+                    const cost = parseFloat(String(item.coffee_total_cost).replace(/[$,]/g, '')) || 0;
+                    const kg = parseFloat(String(item.item_coffee_weight_sum).replace(/[$,]/g, '')) || 0;
+                    grouped[key].totalRevenue += sale; grouped[key].totalCost += cost; grouped[key].totalKg += kg;
+                    if(item.invoice_number) grouped[key].invoiceCount.add(item.invoice_number);
+                });
+                const allCustomers = Object.values(grouped).map(g => ({ ...g, profit: g.totalRevenue - g.totalCost }));
+                totalFilteredProfit = allCustomers.reduce((acc, c) => acc + c.profit, 0);
+                const main = []; const others = [];
+                let othersAgg = { name: t.table.others, totalRevenue: 0, totalCost: 0, totalKg: 0, profit: 0, invoiceCount: 0, isOthers: true };
+                allCustomers.forEach(c => {
+                    const avgPricePerKg = c.totalKg > 0 ? c.totalRevenue / c.totalKg : 0;
+                    const marginPct = c.totalRevenue > 0 ? (c.profit / c.totalRevenue) * 100 : 0;
+                    const uniqueInvoices = c.invoiceCount.size || 1;
+                    const avgVolPerInvoice = c.totalKg / uniqueInvoices;
+                    const contribPct = totalFilteredProfit !== 0 ? (c.profit / totalFilteredProfit) * 100 : 0;
+                    const enriched = { ...c, avgPricePerKg, marginPct, avgVolPerInvoice, contribPct };
+                    if (c.totalKg < 20) { others.push(enriched); othersAgg.totalRevenue += c.totalRevenue; othersAgg.totalCost += c.totalCost; othersAgg.totalKg += c.totalKg; othersAgg.profit += c.profit; othersAgg.invoiceCount += uniqueInvoices; } else { main.push(enriched); }
+                });
+                if (others.length > 0) { othersAgg.avgPricePerKg = othersAgg.totalKg > 0 ? othersAgg.totalRevenue / othersAgg.totalKg : 0; othersAgg.marginPct = othersAgg.totalRevenue > 0 ? (othersAgg.profit / othersAgg.totalRevenue) * 100 : 0; othersAgg.avgVolPerInvoice = othersAgg.totalKg / (othersAgg.invoiceCount || 1); othersAgg.contribPct = totalFilteredProfit !== 0 ? (othersAgg.profit / totalFilteredProfit) * 100 : 0; main.push(othersAgg); }
+                main.sort((a,b) => { if (a.isOthers) return 1; if (b.isOthers) return -1; const valA = a[sortConfig.key], valB = b[sortConfig.key]; if (sortConfig.key === 'name') return sortConfig.direction === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA)); return sortConfig.direction === 'asc' ? valA - valB : valB - valA; });
+                return { customerData: main, othersData: others.sort((a,b) => b.profit - a.profit), summary: { revenue: allCustomers.reduce((acc, c) => acc + c.totalRevenue, 0), profit: totalFilteredProfit, kg: allCustomers.reduce((acc, c) => acc + c.totalKg, 0) } };
+            }, [rawData, selectedYears, startMonth, endMonth, groupBy, sortConfig, t]);
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    {!isPdfMode && (<div className="flex flex-wrap gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 items-center justify-between"><div className="flex items-center bg-gray-200 rounded-lg p-1"><button onClick={() => setGroupBy('fiscal_id')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${groupBy === 'fiscal_id' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t.common.fiscalId}</button><button onClick={() => setGroupBy('location')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${groupBy === 'location' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t.common.location}</button></div><div className="flex flex-wrap gap-4 items-center"><div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200"><span className="text-sm text-gray-500 font-medium">{t.common.year}:</span><div className="flex gap-1">{['2024', '2025'].map(year => (<button key={year} onClick={() => toggleYear(year)} className={`px-3 py-1 text-xs font-bold rounded border transition-colors ${selectedYears.includes(year) ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'}`}>{year}</button>))}</div></div><div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200"><span className="text-sm text-gray-500 font-medium">Meses:</span><select value={startMonth} onChange={(e) => { const val = parseInt(e.target.value); setStartMonth(val); if (val > endMonth) setEndMonth(val); }} className="bg-gray-50 border border-gray-300 text-gray-700 text-xs rounded focus:ring-blue-500 focus:border-blue-500 p-1.5">{MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}</select><span className="text-gray-400">-</span><select value={endMonth} onChange={(e) => { const val = parseInt(e.target.value); setEndMonth(val); if (val < startMonth) setStartMonth(val); }} className="bg-gray-50 border border-gray-300 text-gray-700 text-xs rounded focus:ring-blue-500 focus:border-blue-500 p-1.5">{MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}</select></div></div></div>)}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6"><KPICard title={t.kpis.profitability} value={formatCurrency(summary.profit, lang, currency)} isPositive={true} icon="trendingUp" /><KPICard title={t.kpis.totalRevenue} value={formatCurrency(summary.revenue, lang, currency)} isPositive={true} icon="dollar" /><KPICard title={t.kpis.totalKg} value={`${formatNumber(summary.kg, lang)} kg`} isPositive={true} icon="scale" /></div>
+                    <div className="bg-white p-6 rounded-xl shadow-sm overflow-x-auto"><table className="w-full text-xs md:text-sm text-left"><thead className="bg-slate-50 text-slate-700 uppercase"><tr><th onClick={()=>handleSort('name')} className="px-4 py-3 cursor-pointer hover:bg-slate-100">{groupBy==='fiscal_id'?t.table.client:t.table.branch} {getSortIcon('name')}</th><th onClick={()=>handleSort('totalRevenue')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.sale} {getSortIcon('totalRevenue')}</th><th onClick={()=>handleSort('profit')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.profit} {getSortIcon('profit')}</th><th onClick={()=>handleSort('contribPct')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.contribution} {getSortIcon('contribPct')}</th><th onClick={()=>handleSort('marginPct')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.marginPct} {getSortIcon('marginPct')}</th><th onClick={()=>handleSort('totalKg')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.totalVol} {getSortIcon('totalKg')}</th><th onClick={()=>handleSort('avgVolPerInvoice')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.avgVol} {getSortIcon('avgVolPerInvoice')}</th></tr></thead><tbody>{customerData.map((row,i) => (<React.Fragment key={i}><tr className={`border-b hover:bg-gray-50 ${row.isOthers ? 'bg-gray-50 italic cursor-pointer' : ''}`} onClick={row.isOthers ? () => setOthersExpanded(!othersExpanded) : undefined}><td className="px-4 py-2 font-medium whitespace-normal break-words min-w-[150px]" title={row.name}>{row.isOthers && <span className="mr-2">{othersExpanded ? '▼' : '▶'}</span>}{row.name}</td><td className="px-4 py-2 text-right">{formatCurrency(row.totalRevenue, lang, currency)}</td><td className="px-4 py-2 text-right text-green-600 font-bold">{formatCurrency(row.profit, lang, currency)}</td><td className="px-4 py-2 text-right">{row.contribPct.toFixed(1)}%</td><td className="px-4 py-2 text-right">{row.marginPct.toFixed(1)}%</td><td className="px-4 py-2 text-right">{formatNumber(row.totalKg, lang)}</td><td className="px-4 py-2 text-right">{formatNumber(row.avgVolPerInvoice, lang)}</td></tr>{row.isOthers && othersExpanded && othersData.map((sub, j) => (<tr key={`sub-${j}`} className="border-b bg-gray-50/50 text-gray-500 text-xs"><td className="px-4 py-1 pl-8 truncate">{sub.name}</td><td className="px-4 py-1 text-right">{formatCurrency(sub.totalRevenue, lang, currency)}</td><td className="px-4 py-1 text-right">{formatCurrency(sub.profit, lang, currency)}</td><td className="px-4 py-1 text-right">{sub.contribPct.toFixed(2)}%</td><td className="px-4 py-1 text-right">{sub.marginPct.toFixed(1)}%</td><td className="px-4 py-1 text-right">{formatNumber(sub.totalKg, lang)}</td><td className="px-4 py-1 text-right">{formatNumber(sub.avgVolPerInvoice, lang)}</td></tr>))}</React.Fragment>))}</tbody></table></div>
+                    <InsightBox title={t.obs.customers} insights={[`Top Cliente: ${customerData.length > 0 ? customerData[0].name : 'N/A'} con ${formatCurrency(customerData.length > 0 ? customerData[0].profit : 0, lang, currency)} de beneficio.`, `Total procesado: ${formatNumber(summary.kg, lang)} kg.`]} />
+                </div>
+            );
+        };
+
+        const AnalysisView = ({ t, lang, currency }) => {
+            const chart1Ref = useRef(null); const chart2Ref = useRef(null);
+
+            useEffect(() => {
+                const charts = [];
+                const rate = EXCHANGE_RATES[currency] || 1;
+                const datosMensuales = { 2024: { meses: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'], precio: [298.35, 284.85, 295.42, 286.2, 290.14, 293.09, 289.25, 286.07, 286.11, 286.16, 292.19, 295.89], costo: [116.64, 113.25, 113.31, 114.48, 114.74, 113.4, 113.38, 115.2, 113.02, 114.37, 116.05, 114.55] }, 2025: { precio: [304.86, 312.17, 311.82, 313.88, 326.22, 314.48, 327.47, 321.36, 321.65, 320.39, 321.45, 322.98], costo: [177.56, 175.9, 177.71, 174.99, 176.75, 175.26, 175.47, 177.81, 175.93, 176.27, 178.46, 177.47] } };
+                const p24 = datosMensuales[2024].precio.map(v => v * rate);
+                const c24 = datosMensuales[2024].costo.map(v => v * rate);
+                const p25 = datosMensuales[2025].precio.map(v => v * rate);
+                const c25 = datosMensuales[2025].costo.map(v => v * rate);
+
+                if (chart1Ref.current) { charts.push(new Chart(chart1Ref.current, { type: 'line', data: { labels: datosMensuales[2024].meses, datasets: [{ label: t.common.price + ' 2024', data: p24, borderColor: '#4169E1', backgroundColor: 'rgba(65, 105, 225, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }, { label: t.common.cost + ' 2024', data: c24, borderColor: '#fb8500', backgroundColor: 'rgba(251, 133, 0, 0.1)', borderWidth: 2, borderDash: [5, 5], tension: 0.4, fill: true, pointRadius: 0 }, { label: t.common.price + ' 2025', data: p25, borderColor: '#7b2cbf', backgroundColor: 'rgba(123, 44, 191, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0 }, { label: t.common.cost + ' 2025', data: c25, borderColor: '#dc2626', backgroundColor: 'rgba(220, 38, 38, 0.1)', borderWidth: 3, borderDash: [5, 5], tension: 0.4, fill: true, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { ticks: { callback: (v) => formatNumber(v, lang) } } } } })); }
+                if (chart2Ref.current) { charts.push(new Chart(chart2Ref.current, { type: 'bar', data: { labels: ['Grano', 'Filtro', 'Espresso', 'Cold Brew'], datasets: [{ label: '2024', data: [65.9, 63.8, 86.8, 86.9], backgroundColor: 'rgba(34, 197, 94, 0.7)' }, { label: '2025', data: [45.6, 45.1, 45.8, 50.5], backgroundColor: 'rgba(220, 38, 38, 0.7)' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } })); }
+                return () => charts.forEach(c => c.destroy());
+            }, [lang, currency]);
+
+            return (
+                <div className="strat-view animate-fade-in"><div className="container-like"><div className="alert-banner"><h2>{t.strat.alertTitle}</h2><p>{t.strat.alertDesc}</p><p style={{fontSize:'1em',marginTop:'10px'}}>{t.strat.alertSub}</p></div><div className="metrics-grid"><div className="metric-card purple"><div className="metric-label">{t.strat.kpi1}</div><div className="metric-value">{formatCurrency(144.90, lang, currency)}</div><div className="metric-change negative">{t.strat.kpi1Sub.replace('$34.08', formatCurrency(34.08, lang, currency))}</div></div><div className="metric-card red"><div className="metric-label">{t.strat.kpi2}</div><div className="metric-value">45.6%</div><div className="metric-change negative">{t.strat.kpi2Sub}</div></div><div className="metric-card green"><div className="metric-label">{t.strat.kpi3}</div><div className="metric-value">{formatCurrency(12530000, lang, currency)}</div><div className="metric-change negative">{t.strat.kpi3Sub}</div></div><div className="metric-card orange"><div className="metric-label">{t.strat.kpi4}</div><div className="metric-value">{formatCurrency(4390000, lang, currency)}</div><div className="metric-change negative">{t.strat.kpi4Sub.replace('$366K', formatCurrency(366000, lang, currency))}</div></div></div><MarginLostExplanation t={t} lang={lang} currency={currency} /><div className="chart-container"><div className="chart-title">{t.strat.chart1Title}</div><div className="chart-wrapper"><canvas ref={chart1Ref}></canvas></div><p className="text-xs text-center text-gray-400 mt-2">{t.strat.clickToHide}</p></div><div className="table-container"><div className="chart-title">{t.strat.table1Title}</div><table><thead><tr><th>{t.table.concept}</th><th>{t.table.price}</th><th>{t.table.cost}</th><th>{t.table.marginAbs}</th><th>{t.table.marginPct}</th><th>{t.kpis.totalRevenue}</th></tr></thead><tbody><tr><td><strong>2024</strong></td><td className="number">{formatCurrency(290.61, lang, currency)}</td><td className="number">{formatCurrency(114.45, lang, currency)}</td><td className="number positive-value">{formatCurrency(176.16, lang, currency)}</td><td className="number positive-value">61.6%</td><td className="number">{formatCurrency(22100000, lang, currency)}</td></tr><tr className="highlight-row"><td><strong>2025</strong></td><td className="number">{formatCurrency(317.83, lang, currency)}</td><td className="number">{formatCurrency(176.66, lang, currency)}</td><td className="number">{formatCurrency(141.17, lang, currency)}</td><td className="number negative-value">45.6%</td><td className="number">{formatCurrency(27500000, lang, currency)}</td></tr></tbody></table></div><div className="table-container"><div className="chart-title">{t.strat.table3Title}</div><table><thead><tr><th>{t.table.variety}</th><th>{t.table.sale}</th><th>{t.table.profit}</th><th>{t.table.margin24}</th><th>{t.table.margin25}</th></tr></thead><tbody><tr><td>Main Street</td><td className="number">{formatCurrency(7420000, lang, currency)}</td><td className="number">{formatCurrency(3310000, lang, currency)}</td><td className="number positive-value">61.2%</td><td className="number">44.6%</td></tr><tr><td>Maestrale</td><td className="number">{formatCurrency(6540000, lang, currency)}</td><td className="number">{formatCurrency(3050000, lang, currency)}</td><td className="number positive-value">62.4%</td><td className="number">46.7%</td></tr><tr><td>Mezcla Americano</td><td className="number">{formatCurrency(2430000, lang, currency)}</td><td className="number">{formatCurrency(1230000, lang, currency)}</td><td className="number positive-value">62.2%</td><td className="number positive-value">50.6%</td></tr></tbody></table></div><div className="final-warning"><h3>{t.strat.warnTitle}</h3><p>{t.strat.warnDesc}</p></div></div></div>
+            );
+        };
+
+        // 6. MAIN APP COMPONENT
         const App = () => {
             const [data, setData] = useState([]);
             const [loading, setLoading] = useState(true);
@@ -592,13 +384,18 @@
             const [activeTab, setActiveTab] = useState('dashboard');
             const [processedData, setProcessedData] = useState(null);
             const [lang, setLang] = useState('es');
+            const [currency, setCurrency] = useState('MXN');
             const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
             const contentRef = useRef(null);
             const fullReportRef = useRef(null);
 
             useEffect(() => {
                 const browserLang = navigator.language || navigator.userLanguage;
-                if (browserLang.startsWith('fr')) setLang('fr'); else setLang('es');
+                let initialLang = 'es';
+                if (browserLang.startsWith('fr')) initialLang = 'fr';
+                else if (browserLang.startsWith('en')) initialLang = 'en';
+                setLang(initialLang);
+                if (initialLang === 'es') setCurrency('MXN'); else setCurrency('USD');
             }, []);
 
             const t = TRANSLATIONS[lang];
@@ -609,7 +406,6 @@
                         const response = await fetch(API_URL, { redirect: "follow" });
                         if (!response.ok) throw new Error("Network response was not ok");
                         const jsonData = await response.json();
-                        
                         let finalData = Array.isArray(jsonData) ? jsonData : jsonData.data || jsonData.items || [];
                         const normalizedData = finalData.map(item => {
                             const newItem = {};
@@ -619,121 +415,47 @@
                         setData(normalizedData);
                         processAllData(normalizedData);
                         setLoading(false);
-
-                    } catch (err) {
-                        console.error("Fetch Error:", err);
-                        setError("Error de conexión. Por favor verifica que el App Script esté desplegado como 'Aplicación web' y accesible para 'Cualquier usuario' (Anyone).");
-                        setLoading(false);
-                    }
+                    } catch (err) { console.error("Fetch Error:", err); setError(t.common.error); setLoading(false); }
                 };
-                
                 fetchData();
             }, [lang]); 
 
             const processAllData = (rawData) => {
-                // Same processing logic as before
                 const monthlyData = Array(12).fill(0).map((_, i) => ({
-                    name: MONTHS[i], monthIndex: i,
-                    sales2024: 0, sales2025: 0, kg2024: 0, kg2025: 0,
-                    cost2024: 0, cost2025: 0, profit2024: 0, profit2025: 0
+                    name: MONTHS[i], monthIndex: i, sales2024: 0, sales2025: 0, kg2024: 0, kg2025: 0, cost2024: 0, cost2025: 0, profit2024: 0, profit2025: 0
                 }));
                 const clients = {}; const recipes = {};
                 let totals = { sales2024: 0, sales2025: 0, kg2024: 0, kg2025: 0, profit2024: 0, profit2025: 0 };
-
                 rawData.forEach(item => {
-                    const date = parseDate(item.invoice_date);
-                    const year = date.getFullYear();
-                    const month = date.getMonth();
-                    const parseNum = (val) => {
-                        if (typeof val === 'number') return val; if (!val) return 0;
-                        const cleanStr = String(val).replace(/[$,]/g, ''); return isNaN(parseFloat(cleanStr)) ? 0 : parseFloat(cleanStr);
-                    };
-                    const sale = parseNum(item.item_sale);
-                    const kg = parseNum(item.item_coffee_weight_sum);
-                    const totalCost = parseNum(item.coffee_total_cost);
-                    const profit = sale - totalCost;
-                    const clientId = item.client_fiscal_id || "Desconocido";
-                    const recipeId = item.item_recipe || "Generico";
-
+                    const date = parseDate(item.invoice_date); const year = date.getFullYear(); const month = date.getMonth();
+                    const parseNum = (val) => { if (typeof val === 'number') return val; if (!val) return 0; const cleanStr = String(val).replace(/[$,]/g, ''); return isNaN(parseFloat(cleanStr)) ? 0 : parseFloat(cleanStr); };
+                    const sale = parseNum(item.item_sale); const kg = parseNum(item.item_coffee_weight_sum); const totalCost = parseNum(item.coffee_total_cost); const profit = sale - totalCost;
+                    const clientId = item.client_fiscal_id || "Desconocido"; const recipeId = item.item_recipe || "Generico";
                     if (!clients[clientId]) clients[clientId] = { name: clientId, sales2024: 0, sales2025: 0 };
                     if (!recipes[recipeId]) recipes[recipeId] = { name: recipeId, kg2024: 0, kg2025: 0, profit2025: 0, sales2025: 0 };
-
-                    if (year === 2024) {
-                        monthlyData[month].sales2024 += sale; monthlyData[month].kg2024 += kg;
-                        monthlyData[month].cost2024 += totalCost; monthlyData[month].profit2024 += profit;
-                        totals.sales2024 += sale; totals.kg2024 += kg; totals.profit2024 += profit;
-                        clients[clientId].sales2024 += sale; recipes[recipeId].kg2024 += kg;
-                    } else if (year === 2025) {
-                        monthlyData[month].sales2025 += sale; monthlyData[month].kg2025 += kg;
-                        monthlyData[month].cost2025 += totalCost; monthlyData[month].profit2025 += profit;
-                        totals.sales2025 += sale; totals.kg2025 += kg; totals.profit2025 += profit;
-                        clients[clientId].sales2025 += sale; recipes[recipeId].kg2025 += kg;
-                        recipes[recipeId].profit2025 += profit; recipes[recipeId].sales2025 += sale;
-                    }
+                    if (year === 2024) { monthlyData[month].sales2024 += sale; monthlyData[month].kg2024 += kg; monthlyData[month].cost2024 += totalCost; monthlyData[month].profit2024 += profit; totals.sales2024 += sale; totals.kg2024 += kg; totals.profit2024 += profit; clients[clientId].sales2024 += sale; recipes[recipeId].kg2024 += kg; }
+                    else if (year === 2025) { monthlyData[month].sales2025 += sale; monthlyData[month].kg2025 += kg; monthlyData[month].cost2025 += totalCost; monthlyData[month].profit2025 += profit; totals.sales2025 += sale; totals.kg2025 += kg; totals.profit2025 += profit; clients[clientId].sales2025 += sale; recipes[recipeId].kg2025 += kg; recipes[recipeId].profit2025 += profit; recipes[recipeId].sales2025 += sale; }
                 });
-
-                monthlyData.forEach(m => {
-                    m.avgPrice2024 = m.kg2024 > 0 ? m.sales2024 / m.kg2024 : 0;
-                    m.avgCost2024 = m.kg2024 > 0 ? m.cost2024 / m.kg2024 : 0;
-                    m.avgPrice2025 = m.kg2025 > 0 ? m.sales2025 / m.kg2025 : 0;
-                    m.avgCost2025 = m.kg2025 > 0 ? m.cost2025 / m.kg2025 : 0;
-                });
-
-                totals.avgMarginPerKg2024 = totals.kg2024 > 0 ? totals.profit2024 / totals.kg2024 : 0;
-                totals.avgMarginPerKg2025 = totals.kg2025 > 0 ? totals.profit2025 / totals.kg2025 : 0;
-                totals.marginPct2024 = totals.sales2024 > 0 ? (totals.profit2024 / totals.sales2024) * 100 : 0;
-                totals.marginPct2025 = totals.sales2025 > 0 ? (totals.profit2025 / totals.sales2025) * 100 : 0;
-
-                setProcessedData({
-                    monthly: monthlyData,
-                    clients: Object.values(clients).sort((a,b) => b.sales2025 - a.sales2025),
-                    recipes: Object.values(recipes).sort((a,b) => b.kg2025 - a.kg2025),
-                    totals: totals
-                });
+                monthlyData.forEach(m => { m.avgPrice2024 = m.kg2024 > 0 ? m.sales2024 / m.kg2024 : 0; m.avgCost2024 = m.kg2024 > 0 ? m.cost2024 / m.kg2024 : 0; m.avgPrice2025 = m.kg2025 > 0 ? m.sales2025 / m.kg2025 : 0; m.avgCost2025 = m.kg2025 > 0 ? m.cost2025 / m.kg2025 : 0; });
+                totals.avgMarginPerKg2024 = totals.kg2024 > 0 ? totals.profit2024 / totals.kg2024 : 0; totals.avgMarginPerKg2025 = totals.kg2025 > 0 ? totals.profit2025 / totals.kg2025 : 0;
+                totals.marginPct2024 = totals.sales2024 > 0 ? (totals.profit2024 / totals.sales2024) * 100 : 0; totals.marginPct2025 = totals.sales2025 > 0 ? (totals.profit2025 / totals.sales2025) * 100 : 0;
+                setProcessedData({ monthly: monthlyData, clients: Object.values(clients).sort((a,b) => b.sales2025 - a.sales2025), recipes: Object.values(recipes).sort((a,b) => b.kg2025 - a.kg2025), totals: totals });
             };
 
             const generatePdfFromElement = async (element, filename) => {
-                const originalWidth = element.style.width;
-                element.style.width = '1200px'; 
+                const originalWidth = element.style.width; element.style.width = '1200px'; 
                 try {
                     const canvas = await html2canvas(element, { scale: 1.5, useCORS: true, logging: false, windowWidth: 1200, backgroundColor: '#f8fafc' });
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    const pageHeight = pdf.internal.pageSize.getHeight();
-                    let heightLeft = pdfHeight, position = 0;
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                    heightLeft -= pageHeight;
-                    while (heightLeft >= 0) {
-                        position = heightLeft - pdfHeight;
-                        pdf.addPage();
-                        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                        heightLeft -= pageHeight;
-                    }
+                    const imgData = canvas.toDataURL('image/png'); const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+                    const imgProps = pdf.getImageProperties(imgData); const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; const pageHeight = pdf.internal.pageSize.getHeight();
+                    let heightLeft = pdfHeight, position = 0; pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight); heightLeft -= pageHeight;
+                    while (heightLeft >= 0) { position = heightLeft - pdfHeight; pdf.addPage(); pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight); heightLeft -= pageHeight; }
                     pdf.save(filename);
-                } catch (e) { console.error("PDF Error", e); } 
-                finally { element.style.width = originalWidth; }
+                } catch (e) { console.error("PDF Error", e); } finally { element.style.width = originalWidth; }
             };
 
-            const handleDownloadCurrentView = async () => {
-                if (!contentRef.current) return;
-                const element = contentRef.current;
-                element.classList.add('pdf-mode');
-                await new Promise(r => setTimeout(r, 500)); 
-                await generatePdfFromElement(element, `Report_${activeTab}.pdf`);
-                element.classList.remove('pdf-mode');
-            };
-
-            const handleDownloadFullReport = async () => {
-                setIsGeneratingPdf(true);
-                await new Promise(r => setTimeout(r, 2500)); 
-                if (fullReportRef.current) await generatePdfFromElement(fullReportRef.current, `Informe_Completo_Ventas.pdf`);
-                setIsGeneratingPdf(false);
-            };
-
-            const toggleLang = () => setLang(prev => prev === 'es' ? 'fr' : 'es');
+            const handleDownloadFullReport = async () => { setIsGeneratingPdf(true); await new Promise(r => setTimeout(r, 2500)); if (fullReportRef.current) await generatePdfFromElement(fullReportRef.current, `Informe_Completo_Ventas.pdf`); setIsGeneratingPdf(false); };
+            const toggleLang = () => setLang(prev => { const n = prev === 'es' ? 'en' : (prev === 'en' ? 'fr' : 'es'); if (n === 'es') setCurrency('MXN'); else setCurrency('USD'); return n; });
 
             if (loading) return <div className="flex h-screen items-center justify-center bg-gray-50"><div className="text-center"><Icon name="loader" className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" /><h2 className="text-xl font-semibold text-gray-700">{t.common.loading}</h2></div></div>;
             if (error || !processedData) return <div className="p-10 text-red-600 text-center">{error}</div>;
@@ -741,7 +463,11 @@
             return (
                 <div className="flex h-screen overflow-hidden">
                     <aside className="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20 hidden md:flex">
-                        <div className="p-6 border-b border-slate-800"><h1 className="text-xl font-bold tracking-tight text-blue-400 uppercase leading-tight">{t.title}</h1><p className="text-xs text-slate-400 mt-2">{t.subtitle}</p></div>
+                        <div className="p-6 border-b border-slate-800 text-center">
+                            <img src="assets/whitelabel.png" alt="Logo" className="h-12 mx-auto mb-3 object-contain" onError={(e) => {e.target.style.display='none'; e.target.nextSibling.style.display='block'}} />
+                            <h1 style={{display:'none'}} className="text-xl font-bold tracking-tight text-blue-400 uppercase leading-tight">SSC GOURMET</h1>
+                            <p className="text-xs text-slate-400 mt-2">{t.subtitle}</p>
+                        </div>
                         <nav className="flex-1 p-4 space-y-2">
                             <NavButton id="dashboard" label={t.tabs.dashboard} icon="dashboard" active={activeTab} set={setActiveTab} />
                             <NavButton id="growth" label={t.tabs.growth} icon="trendingUp" active={activeTab} set={setActiveTab} />
@@ -749,550 +475,50 @@
                             <NavButton id="customers" label={t.tabs.customers} icon="users" active={activeTab} set={setActiveTab} />
                             <NavButton id="analysis" label={t.tabs.analysis} icon="alert" active={activeTab} set={setActiveTab} />
                         </nav>
-                        <div className="p-4 border-t border-slate-800"><button onClick={toggleLang} className="flex items-center gap-2 text-sm text-slate-400 hover:text-white w-full px-2 py-2 rounded hover:bg-slate-800 transition-colors"><Icon name="globe" className="w-4 h-4" /><span>{lang === 'es' ? 'Cambiar a Francés (FR)' : 'Passer en Espagnol (MX)'}</span></button></div>
+                        <div className="p-4 border-t border-slate-800 space-y-4">
+                            <div className="flex justify-between bg-slate-800 rounded p-1">
+                                {['es', 'en', 'fr'].map(l => (<button key={l} onClick={() => { setLang(l); if (l === 'es') setCurrency('MXN'); else setCurrency('USD'); }} className={`px-3 py-1 text-xs font-bold rounded transition-colors ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}>{l.toUpperCase()}</button>))}
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">{t.common.currency}</p>
+                                <div className="flex justify-between bg-slate-800 rounded p-1">
+                                    {['MXN', 'USD', 'EUR'].map(c => (<button key={c} onClick={() => setCurrency(c)} className={`px-2 py-1 text-xs font-bold rounded transition-colors ${currency === c ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-white'}`}>{c}</button>))}
+                                </div>
+                                <p className="text-[10px] text-slate-500 mt-2 text-right">{t.common.exchangeRate}: 1 {currency} = { (1/EXCHANGE_RATES[currency]).toFixed(2) } MXN</p>
+                            </div>
+                        </div>
                         <div className="p-4 border-t border-slate-800 text-[10px] text-slate-500 text-center font-bold tracking-wider">{t.footer}</div>
                     </aside>
 
-                    <div className="md:hidden fixed top-0 w-full bg-slate-900 text-white z-30 p-4 flex justify-between items-center shadow-md"><span className="font-bold">{t.title}</span><div className="flex gap-2"><button onClick={toggleLang} className="text-xs bg-slate-800 px-2 py-1 rounded">{lang.toUpperCase()}</button></div></div>
+                    <div className="md:hidden fixed top-0 w-full bg-slate-900 text-white z-30 p-4 flex justify-between items-center shadow-md"><span className="font-bold">SSC Gourmet</span><div className="flex gap-2"><button onClick={toggleLang} className="text-xs bg-slate-800 px-2 py-1 rounded">{lang.toUpperCase()}</button></div></div>
                     <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-30 flex justify-around p-2">
-                         {['dashboard','growth','margin','customers','analysis'].map(tab => (
-                             <button key={tab} onClick={() => setActiveTab(tab)} className={`p-2 rounded-full ${activeTab === tab ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}><Icon name={tab === 'analysis' ? 'alert' : (tab === 'customers' ? 'users' : (tab === 'margin' ? 'dollar' : (tab === 'growth' ? 'trendingUp' : 'dashboard')))} className="w-6 h-6"/></button>
-                         ))}
+                         {['dashboard','growth','margin','customers','analysis'].map(tab => (<button key={tab} onClick={() => setActiveTab(tab)} className={`p-2 rounded-full ${activeTab === tab ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}><Icon name={tab === 'analysis' ? 'alert' : (tab === 'customers' ? 'users' : (tab === 'margin' ? 'dollar' : (tab === 'growth' ? 'trendingUp' : 'dashboard')))} className="w-6 h-6"/></button>))}
                     </div>
 
                     <main className="flex-1 overflow-y-auto bg-gray-50 relative pt-16 md:pt-0 pb-16 md:pb-0" ref={contentRef}>
                         <div className="max-w-7xl mx-auto p-4 md:p-8">
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                                <div><h2 className="text-2xl md:text-3xl font-bold text-slate-800">{activeTab === 'analysis' ? t.strat.mainTitle : t.tabs[activeTab]}</h2><p className="text-slate-500 mt-1 text-sm">{t.sourceInfo}</p></div>
+                                <div><h2 className="text-2xl md:text-3xl font-bold text-slate-800">{activeTab === 'analysis' ? t.strat.mainTitle : t.tabs[activeTab]}</h2><p className="text-slate-500 mt-1 text-sm">{t.tabDesc[activeTab]}</p></div>
                                 <div className="flex gap-2"><button onClick={handleDownloadFullReport} disabled={isGeneratingPdf} className="hide-on-pdf flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-all text-sm font-medium disabled:opacity-50">{isGeneratingPdf ? <Icon name="loader" className="w-4 h-4 animate-spin"/> : <Icon name="fileText" className="w-4 h-4" />}{isGeneratingPdf ? t.common.generating : t.common.downloadFull}</button></div>
                             </div>
-                            {activeTab === 'dashboard' && <DashboardView data={processedData} t={t} lang={lang} />}
-                            {activeTab === 'growth' && <GrowthView data={processedData} t={t} lang={lang} />}
-                            {activeTab === 'margin' && <MarginView data={processedData} t={t} lang={lang} />}
-                            {activeTab === 'customers' && <CustomersView rawData={data} t={t} lang={lang} />}
-                            {activeTab === 'analysis' && <AnalysisView t={t} lang={lang} />}
+                            {activeTab === 'dashboard' && <DashboardView data={processedData} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'growth' && <GrowthView data={processedData} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'margin' && <MarginView data={processedData} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'customers' && <CustomersView rawData={data} t={t} lang={lang} currency={currency} />}
+                            {activeTab === 'analysis' && <AnalysisView t={t} lang={lang} currency={currency} />}
                         </div>
                     </main>
 
                     {isGeneratingPdf && (
                         <div ref={fullReportRef} className="pdf-mode">
                             <div className="mb-8 border-b pb-4"><h1 className="text-3xl font-bold text-slate-900">{t.title}</h1><p className="text-slate-500">{t.subtitle} - {t.footer}</p><p className="text-sm text-slate-400 mt-1">{new Date().toLocaleDateString()}</p></div>
-                            <div className="mb-8"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.dashboard}</h2><DashboardView data={processedData} t={t} lang={lang} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.growth}</h2><GrowthView data={processedData} t={t} lang={lang} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.margin}</h2><MarginView data={processedData} t={t} lang={lang} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.customers}</h2><CustomersView rawData={data} t={t} lang={lang} isPdfMode={true} /></div>
-                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.strat.mainTitle}</h2><AnalysisView t={t} lang={lang} /></div>
+                            <div className="mb-8"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.dashboard}</h2><DashboardView data={processedData} t={t} lang={lang} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.growth}</h2><GrowthView data={processedData} t={t} lang={lang} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.margin}</h2><MarginView data={processedData} t={t} lang={lang} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.tabs.customers}</h2><CustomersView rawData={data} t={t} lang={lang} isPdfMode={true} currency={currency} /></div>
+                            <div className="page-break"><h2 className="text-2xl font-bold text-blue-600 mb-4">{t.strat.mainTitle}</h2><AnalysisView t={t} lang={lang} currency={currency} /></div>
                         </div>
                     )}
-                </div>
-            );
-        };
-
-        const NavButton = ({ id, label, icon, active, set }) => (
-            <button onClick={() => set(id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left ${active === id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                <Icon name={icon} className="w-5 h-5 flex-shrink-0" /><span className="font-medium text-sm">{label}</span>
-            </button>
-        );
-
-        const KPICard = ({ title, value, subValue, icon, isPositive }) => (
-            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-start justify-between relative overflow-hidden">
-                <div className="z-10 relative">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{title}</p><h3 className="text-2xl font-bold text-gray-800">{value}</h3>
-                    {subValue && <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}><span>{isPositive ? '↑' : '↓'}</span><span>{subValue}</span></div>}
-                </div>
-                <div className={`p-3 rounded-lg flex-shrink-0 ${isPositive === false ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}><Icon name={icon} className="w-6 h-6" /></div>
-            </div>
-        );
-
-        const InsightBox = ({ title, insights }) => (
-            <div className="bg-white border-l-4 border-blue-500 shadow-sm rounded-r-xl p-6 mt-8">
-                <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Icon name="dashboard" className="w-5 h-5 text-blue-500" />{title}</h4>
-                <ul className="space-y-3">{insights.map((insight, idx) => <li key={idx} className="flex items-start gap-3 text-sm text-slate-600"><span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-2 flex-shrink-0"></span>{insight}</li>)}</ul>
-            </div>
-        );
-
-        const MarginLostExplanation = ({ t, lang }) => {
-            const [isExpanded, setIsExpanded] = useState(false);
-
-            return (
-                <div className="mt-6 mb-6">
-                    <button 
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full flex items-center justify-between bg-blue-50 hover:bg-blue-100 p-4 rounded-xl border border-blue-200 transition-all group"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-500 rounded-full text-white"><Icon name="chart" className="w-5 h-5"/></div>
-                            <span className="font-bold text-blue-800 text-lg">{t.strat.lostMarginExp}</span>
-                        </div>
-                        <Icon name={isExpanded ? "chevronUp" : "chevronDown"} className="w-5 h-5 text-blue-600" />
-                    </button>
-
-                    {isExpanded && (
-                        <div className="mt-3 p-6 bg-gradient-to-br from-sky-50 to-white border-l-[6px] border-sky-600 rounded-r-xl shadow-inner animate-fade-in">
-                            <h3 className="text-xl font-bold text-sky-900 mb-4 flex items-center gap-2">
-                                {t.strat.lostMarginTitle}
-                            </h3>
-                            <p className="text-sky-800 mb-6 font-medium text-lg leading-relaxed">
-                                {t.strat.lostMarginDesc}
-                            </p>
-
-                            <div className="grid md:grid-cols-2 gap-8 mb-8">
-                                <div className="bg-white p-5 rounded-lg shadow-sm border border-sky-100">
-                                    <h4 className="font-bold text-gray-700 mb-3 border-b pb-2">{t.strat.lostMarginStep1}</h4>
-                                    <p className="text-sm text-gray-600 font-mono">{t.strat.lostMarginStep1Desc}</p>
-                                    
-                                    <h4 className="font-bold text-gray-700 mt-4 mb-3 border-b pb-2">{t.strat.lostMarginStep2}</h4>
-                                    <p className="text-sm text-gray-600 font-mono">{t.strat.lostMarginStep2Desc}</p>
-
-                                    <h4 className="font-bold text-red-600 mt-4 mb-3 border-b border-red-100 pb-2">{t.strat.lostMarginStep3}</h4>
-                                    <p className="text-lg font-bold text-red-600 font-mono">{t.strat.lostMarginStep3Desc}</p>
-                                </div>
-
-                                <div className="flex flex-col justify-center">
-                                    <div className="mb-6">
-                                        <div className="flex justify-between text-sm font-bold text-gray-600 mb-1">
-                                            <span>{t.strat.lostMarginViz1}</span>
-                                            <span>$16.92M</span>
-                                        </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-6">
-                                            <div className="bg-green-500 h-6 rounded-full" style={{width: '100%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div className="mb-2">
-                                        <div className="flex justify-between text-sm font-bold text-gray-600 mb-1">
-                                            <span>{t.strat.lostMarginViz2}</span>
-                                            <span>$12.53M</span>
-                                        </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-6 relative">
-                                            <div className="bg-red-500 h-6 rounded-l-full absolute top-0 left-0" style={{width: '74%'}}></div>
-                                            <div className="h-6 absolute top-0 right-0 border-l-2 border-dashed border-gray-400 flex items-center justify-center text-xs text-gray-500 font-bold" style={{width: '26%'}}>
-                                                {t.strat.lostMarginVizGap}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div className="bg-white p-4 rounded-lg border border-sky-100 flex items-center gap-3">
-                                    <div className="p-2 bg-sky-100 rounded-lg text-sky-600"><Icon name="calendar" className="w-5 h-5"/></div>
-                                    <span className="font-bold text-gray-700">{t.strat.lostMarginDaily1}</span>
-                                </div>
-                                <div className="bg-white p-4 rounded-lg border border-sky-100 flex items-center gap-3">
-                                    <div className="p-2 bg-sky-100 rounded-lg text-sky-600"><Icon name="calendar" className="w-5 h-5"/></div>
-                                    <span className="font-bold text-gray-700">{t.strat.lostMarginDaily2}</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-sky-100 p-4 rounded-lg border border-sky-200 text-sky-800 text-sm font-medium italic">
-                                "{t.strat.lostMarginFinal}"
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        // --- DASHBOARD VIEW ---
-        const DashboardView = ({ data, t, lang }) => {
-            const { totals, monthly, clients } = data;
-            const salesGrowthPct = totals.sales2024 > 0 ? ((totals.sales2025 - totals.sales2024) / totals.sales2024) * 100 : 0;
-            const kgGrowthPct = totals.kg2024 > 0 ? ((totals.kg2025 - totals.kg2024) / totals.kg2024) * 100 : 0;
-            const marginDiff = totals.avgMarginPerKg2025 - totals.avgMarginPerKg2024;
-            const profitGrowthPct = totals.profit2024 > 0 ? ((totals.profit2025 - totals.profit2024) / totals.profit2024) * 100 : 0;
-            const insights = [`${t.kpis.growthRevenue}: ${salesGrowthPct.toFixed(1)}% ${t.common.vs} 2024.`, `${t.kpis.totalKg}: ${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg (${kgGrowthPct > 0 ? '+' : ''}${kgGrowthPct.toFixed(1)}%).`, `${t.kpis.avgMargin}: ${marginDiff >= 0 ? '+' : ''}${formatCurrency(marginDiff, lang)} ${t.common.vs} 2024.`];
-
-            return (
-                <div className="animate-fade-in space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <KPICard title={`${t.kpis.totalRevenue} 2025`} value={formatCurrency(totals.sales2025, lang)} subValue={`${salesGrowthPct.toFixed(1)}%`} isPositive={salesGrowthPct > 0} icon="dollar" />
-                        <KPICard title={`${t.kpis.totalKg} 2025`} value={`${formatNumber(totals.kg2025, lang)} kg`} subValue={`${kgGrowthPct.toFixed(1)}%`} isPositive={kgGrowthPct > 0} icon="scale" />
-                        <KPICard title={t.kpis.avgMargin} value={formatCurrency(totals.avgMarginPerKg2025, lang)} subValue={`${formatCurrency(marginDiff, lang)}`} isPositive={marginDiff >= 0} icon="chart" />
-                        <KPICard title={t.kpis.totalProfit} value={formatCurrency(totals.profit2025, lang)} subValue={`${profitGrowthPct.toFixed(1)}%`} isPositive={profitGrowthPct > 0} icon="trendingUp" />
-                    </div>
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                            <h3 className="font-bold text-gray-700 mb-6">{t.charts.monthlyRevenue}</h3>
-                            <div className="h-72"><ResponsiveContainer><LineChart data={monthly}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="name"/><YAxis/><Tooltip formatter={(v)=>formatCurrency(v,lang)}/><Legend/><Line type="monotone" dataKey="sales2024" stroke={COLORS.year2024}/><Line type="monotone" dataKey="sales2025" stroke={COLORS.year2025}/></LineChart></ResponsiveContainer></div>
-                        </div>
-                        <div className="w-full lg:w-2/5 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                            <h3 className="font-bold text-gray-700 mb-6">{t.charts.topClients}</h3>
-                            <div className="overflow-x-auto"><table className="w-full text-xs md:text-sm text-left text-gray-500"><thead className="text-xs text-gray-700 uppercase bg-gray-50"><tr><th className="px-3 py-2 rounded-l-lg">{t.table.client}</th><th className="px-3 py-2 text-right">{t.table.sale}</th><th className="px-3 py-2 text-right rounded-r-lg">{t.table.growth}</th></tr></thead><tbody>{clients.slice(0, 5).map((client, idx) => { const growth = client.sales2024 > 0 ? ((client.sales2025 - client.sales2024) / client.sales2024) * 100 : 100; return (<tr key={idx} className="border-b hover:bg-gray-50"><td className="px-3 py-2 font-medium text-gray-900 text-xs md:text-sm whitespace-normal break-words" title={client.name}>{client.name}</td><td className="px-3 py-2 text-right">{formatCurrency(client.sales2025, lang)}</td><td className={`px-3 py-2 text-right font-bold ${growth >= 0 ? 'text-green-600' : 'text-red-500'}`}>{growth >= 0 ? '↑' : '↓'} {Math.abs(growth).toFixed(0)}%</td></tr>); })}</tbody></table></div>
-                        </div>
-                    </div>
-                    <InsightBox title={t.obs.general} insights={insights} />
-                </div>
-            );
-        };
-
-        const GrowthView = ({ data, t, lang }) => {
-            const { monthly, totals } = data;
-            const quarters = [{name:'Q1',months:[0,1,2]},{name:'Q2',months:[3,4,5]},{name:'Q3',months:[6,7,8]},{name:'Q4',months:[9,10,11]}].map(q => { const s24=q.months.reduce((a,m)=>a+monthly[m].sales2024,0); const s25=q.months.reduce((a,m)=>a+monthly[m].sales2025,0); return {name:q.name,sales2024:s24,sales2025:s25,pct:s24>0?((s25-s24)/s24)*100:0}; });
-            const insights = [`${t.kpis.growthRevenue}: +${formatCurrency(totals.sales2025 - totals.sales2024, lang)}.`];
-            return (
-                <div className="space-y-6 animate-fade-in">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><KPICard title={t.kpis.growthRevenue} value={formatCurrency(totals.sales2025 - totals.sales2024, lang)} isPositive={true} icon="dollar" /><KPICard title={t.kpis.growthVol} value={`${formatNumber(totals.kg2025 - totals.kg2024, lang)} kg`} isPositive={true} icon="scale" /></div>
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.monthlyComp}</h3><div className="h-64"><ResponsiveContainer><BarChart data={monthly}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis/><Tooltip formatter={(v)=>formatCurrency(v,lang)}/><Bar dataKey="sales2024" fill={COLORS.year2024}/><Bar dataKey="sales2025" fill={COLORS.year2025}/></BarChart></ResponsiveContainer></div></div>
-                        <div className="flex-1 bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold text-gray-700 mb-4">{t.charts.quarterly}</h3><table className="w-full text-xs md:text-sm"><thead className="bg-gray-50 text-gray-600"><tr><th className="px-3 py-2 text-left">{t.table.q}</th><th className="px-3 py-2 text-right">2024</th><th className="px-3 py-2 text-right">2025</th><th className="px-3 py-2 text-right">{t.table.change}</th></tr></thead><tbody>{quarters.map((q,i)=>(<tr key={i} className="border-b"><td className="px-3 py-2 font-medium">{q.name}</td><td className="px-3 py-2 text-right">{formatCurrency(q.sales2024,lang)}</td><td className="px-3 py-2 text-right">{formatCurrency(q.sales2025,lang)}</td><td className={`px-3 py-2 text-right font-bold ${q.pct>=0?'text-green-600':'text-red-500'}`}>{q.pct.toFixed(1)}%</td></tr>))}</tbody></table></div>
-                    </div>
-                    <InsightBox title={t.obs.growth} insights={insights} />
-                </div>
-            );
-        };
-
-        const MarginView = ({ data, t, lang }) => {
-            const { monthly, totals } = data;
-            const [selectedYear, setSelectedYear] = useState('2025');
-            const marginChange = totals.avgMarginPerKg2025 - totals.avgMarginPerKg2024;
-            const marginPctChange = totals.marginPct2025 - totals.marginPct2024;
-            const insights = [`${t.kpis.avgMargin}: ${formatCurrency(totals.avgMarginPerKg2025, lang)}.`];
-            return (
-                <div className="space-y-6 animate-fade-in">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <KPICard title={t.kpis.avgMargin} value={formatCurrency(totals.avgMarginPerKg2025, lang)} subValue={formatCurrency(marginChange, lang)} isPositive={marginChange >= 0} icon="dollar" />
-                        <KPICard title={t.kpis.marginPct} value={`${totals.marginPct2025.toFixed(1)}%`} subValue={`${marginPctChange.toFixed(1)}%`} isPositive={marginPctChange >= 0} icon="chart" />
-                        <KPICard title={t.kpis.totalProfit} value={formatCurrency(totals.profit2025, lang)} isPositive={true} icon="trendingUp" />
-                    </div>
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative"><div className="flex justify-between items-center mb-6"><h3 className="font-bold text-gray-700">{t.charts.priceVsCost}</h3><div className="flex bg-gray-100 rounded-lg p-1"><button onClick={()=>setSelectedYear('2024')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2024'?'bg-white shadow text-blue-600':''}`}>2024</button><button onClick={()=>setSelectedYear('2025')} className={`px-3 py-1 text-xs font-bold rounded-md ${selectedYear==='2025'?'bg-white shadow text-purple-600':''}`}>2025</button></div></div><div className="h-80"><ResponsiveContainer><AreaChart data={monthly}><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} stopOpacity={0.2}/><stop offset="95%" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="name"/><YAxis/><Tooltip formatter={(v)=>formatCurrency(v,lang)}/><Area type="monotone" dataKey={`avgCost${selectedYear}`} stroke="#ef4444" fill="transparent" strokeDasharray="5 5"/><Area type="monotone" dataKey={`avgPrice${selectedYear}`} stroke={selectedYear==='2025'?COLORS.year2025:COLORS.year2024} fill="url(#g)"/></AreaChart></ResponsiveContainer></div></div>
-                    <InsightBox title={t.obs.margin} insights={insights} />
-                </div>
-            );
-        };
-
-        const CustomersView = ({ rawData, t, lang, isPdfMode }) => {
-            const [selectedYears, setSelectedYears] = useState(['2024']);
-            const [startMonth, setStartMonth] = useState(0);
-            const [endMonth, setEndMonth] = useState(11);
-            const [groupBy, setGroupBy] = useState('fiscal_id');
-            const [sortConfig, setSortConfig] = useState({ key: 'profit', direction: 'desc' });
-            const [othersExpanded, setOthersExpanded] = useState(false);
-            
-            const handleSort = (key) => setSortConfig({ key, direction: sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc' });
-            const getSortIcon = (key) => sortConfig.key !== key ? <span className="ml-1 text-gray-300">↕</span> : (sortConfig.direction === 'asc' ? <span className="ml-1 text-blue-600">↑</span> : <span className="ml-1 text-blue-600">↓</span>);
-            
-            const toggleYear = (year) => {
-                if (selectedYears.includes(year)) {
-                    if (selectedYears.length > 1) setSelectedYears(selectedYears.filter(y => y !== year));
-                } else {
-                    setSelectedYears([...selectedYears, year]);
-                }
-            };
-
-            const { customerData, summary, othersData } = useMemo(() => {
-                const grouped = {};
-                let totalFilteredProfit = 0;
-
-                rawData.forEach(item => {
-                    const date = parseDate(item.invoice_date);
-                    const year = String(date.getFullYear());
-                    const month = date.getMonth();
-
-                    if (!selectedYears.includes(year)) return;
-                    if (month < startMonth || month > endMonth) return;
-
-                    let key = groupBy === 'fiscal_id' ? (item.client_fiscal_id || "N/A") : (item.client_location || "N/A");
-                    if (!grouped[key]) grouped[key] = { name: key, totalRevenue: 0, totalCost: 0, totalKg: 0, invoiceCount: new Set() };
-                    const sale = parseFloat(String(item.item_sale).replace(/[$,]/g, '')) || 0;
-                    const cost = parseFloat(String(item.coffee_total_cost).replace(/[$,]/g, '')) || 0;
-                    const kg = parseFloat(String(item.item_coffee_weight_sum).replace(/[$,]/g, '')) || 0;
-                    grouped[key].totalRevenue += sale; grouped[key].totalCost += cost; grouped[key].totalKg += kg;
-                    if(item.invoice_number) grouped[key].invoiceCount.add(item.invoice_number);
-                });
-
-                const allCustomers = Object.values(grouped).map(g => {
-                    const profit = g.totalRevenue - g.totalCost;
-                    return { ...g, profit };
-                });
-
-                totalFilteredProfit = allCustomers.reduce((acc, c) => acc + c.profit, 0);
-
-                const main = [];
-                const others = [];
-                let othersAgg = { name: t.table.others, totalRevenue: 0, totalCost: 0, totalKg: 0, profit: 0, invoiceCount: 0, isOthers: true };
-
-                allCustomers.forEach(c => {
-                    const avgPricePerKg = c.totalKg > 0 ? c.totalRevenue / c.totalKg : 0;
-                    const marginPct = c.totalRevenue > 0 ? (c.profit / c.totalRevenue) * 100 : 0;
-                    const uniqueInvoices = c.invoiceCount.size || 1;
-                    const avgVolPerInvoice = c.totalKg / uniqueInvoices;
-                    const contribPct = totalFilteredProfit !== 0 ? (c.profit / totalFilteredProfit) * 100 : 0;
-
-                    const enriched = { ...c, avgPricePerKg, marginPct, avgVolPerInvoice, contribPct };
-
-                    if (c.totalKg < 20) {
-                        others.push(enriched);
-                        othersAgg.totalRevenue += c.totalRevenue;
-                        othersAgg.totalCost += c.totalCost;
-                        othersAgg.totalKg += c.totalKg;
-                        othersAgg.profit += c.profit;
-                        othersAgg.invoiceCount += uniqueInvoices;
-                    } else {
-                        main.push(enriched);
-                    }
-                });
-
-                if (others.length > 0) {
-                    othersAgg.avgPricePerKg = othersAgg.totalKg > 0 ? othersAgg.totalRevenue / othersAgg.totalKg : 0;
-                    othersAgg.marginPct = othersAgg.totalRevenue > 0 ? (othersAgg.profit / othersAgg.totalRevenue) * 100 : 0;
-                    othersAgg.avgVolPerInvoice = othersAgg.totalKg / (othersAgg.invoiceCount || 1); // Approximation for others
-                    othersAgg.contribPct = totalFilteredProfit !== 0 ? (othersAgg.profit / totalFilteredProfit) * 100 : 0;
-                    main.push(othersAgg);
-                }
-
-                // Sort main
-                main.sort((a,b) => {
-                    if (a.isOthers) return 1; // Always last
-                    if (b.isOthers) return -1;
-                    const valA = a[sortConfig.key], valB = b[sortConfig.key];
-                    if (sortConfig.key === 'name') return sortConfig.direction === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
-                    return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
-                });
-
-                return { 
-                    customerData: main, 
-                    othersData: others.sort((a,b) => b.profit - a.profit),
-                    summary: {
-                        revenue: allCustomers.reduce((acc, c) => acc + c.totalRevenue, 0),
-                        profit: totalFilteredProfit,
-                        kg: allCustomers.reduce((acc, c) => acc + c.totalKg, 0)
-                    }
-                };
-            }, [rawData, selectedYears, startMonth, endMonth, groupBy, sortConfig, t]);
-
-            const insights = [
-                `Top Cliente: ${customerData.length > 0 ? customerData[0].name : 'N/A'} con ${formatCurrency(customerData.length > 0 ? customerData[0].profit : 0, lang)} de beneficio.`,
-                `Total procesado en esta vista: ${formatNumber(summary.kg, lang)} kg.`
-            ];
-
-            return (
-                <div className="space-y-6 animate-fade-in">
-                    {!isPdfMode && (
-                        <div className="flex flex-wrap gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 items-center justify-between">
-                            <div className="flex items-center bg-gray-200 rounded-lg p-1">
-                                <button onClick={() => setGroupBy('fiscal_id')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${groupBy === 'fiscal_id' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t.common.fiscalId}</button>
-                                <button onClick={() => setGroupBy('location')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${groupBy === 'location' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{t.common.location}</button>
-                            </div>
-                            <div className="flex flex-wrap gap-4 items-center">
-                                <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200"><span className="text-sm text-gray-500 font-medium">{t.common.year}:</span><div className="flex gap-1">{['2024', '2025'].map(year => (<button key={year} onClick={() => toggleYear(year)} className={`px-3 py-1 text-xs font-bold rounded border transition-colors ${selectedYears.includes(year) ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'}`}>{year}</button>))}</div></div>
-                                <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200"><span className="text-sm text-gray-500 font-medium">Meses:</span><select value={startMonth} onChange={(e) => { const val = parseInt(e.target.value); setStartMonth(val); if (val > endMonth) setEndMonth(val); }} className="bg-gray-50 border border-gray-300 text-gray-700 text-xs rounded focus:ring-blue-500 focus:border-blue-500 p-1.5">{MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}</select><span className="text-gray-400">-</span><select value={endMonth} onChange={(e) => { const val = parseInt(e.target.value); setEndMonth(val); if (val < startMonth) setStartMonth(val); }} className="bg-gray-50 border border-gray-300 text-gray-700 text-xs rounded focus:ring-blue-500 focus:border-blue-500 p-1.5">{MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}</select></div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <KPICard title={t.kpis.profitability} value={formatCurrency(summary.profit, lang)} isPositive={true} icon="trendingUp" />
-                        <KPICard title={t.kpis.totalRevenue} value={formatCurrency(summary.revenue, lang)} isPositive={true} icon="dollar" />
-                        <KPICard title={t.kpis.totalKg} value={`${formatNumber(summary.kg, lang)} kg`} isPositive={true} icon="scale" />
-                    </div>
-
-                    <div className="bg-white p-6 rounded-xl shadow-sm overflow-x-auto"><table className="w-full text-xs md:text-sm text-left"><thead className="bg-slate-50 text-slate-700 uppercase"><tr><th onClick={()=>handleSort('name')} className="px-4 py-3 cursor-pointer hover:bg-slate-100">{groupBy==='fiscal_id'?t.table.client:t.table.branch} {getSortIcon('name')}</th><th onClick={()=>handleSort('totalRevenue')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.sale} {getSortIcon('totalRevenue')}</th><th onClick={()=>handleSort('profit')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.profit} {getSortIcon('profit')}</th><th onClick={()=>handleSort('contribPct')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.contribution} {getSortIcon('contribPct')}</th><th onClick={()=>handleSort('marginPct')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.marginPct} {getSortIcon('marginPct')}</th><th onClick={()=>handleSort('totalKg')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.totalVol} {getSortIcon('totalKg')}</th><th onClick={()=>handleSort('avgVolPerInvoice')} className="px-4 py-3 text-right cursor-pointer hover:bg-slate-100">{t.table.avgVol} {getSortIcon('avgVolPerInvoice')}</th></tr></thead><tbody>
-                        {customerData.map((row,i) => (
-                            <React.Fragment key={i}>
-                                <tr className={`border-b hover:bg-gray-50 ${row.isOthers ? 'bg-gray-50 italic cursor-pointer' : ''}`} onClick={row.isOthers ? () => setOthersExpanded(!othersExpanded) : undefined}>
-                                    <td className="px-4 py-2 font-medium whitespace-normal break-words min-w-[150px]" title={row.name}>
-                                        {row.isOthers && <span className="mr-2">{othersExpanded ? '▼' : '▶'}</span>}
-                                        {row.name}
-                                    </td>
-                                    <td className="px-4 py-2 text-right">{formatCurrency(row.totalRevenue, lang)}</td>
-                                    <td className="px-4 py-2 text-right text-green-600 font-bold">{formatCurrency(row.profit, lang)}</td>
-                                    <td className="px-4 py-2 text-right">{row.contribPct.toFixed(1)}%</td>
-                                    <td className="px-4 py-2 text-right">{row.marginPct.toFixed(1)}%</td>
-                                    <td className="px-4 py-2 text-right">{formatNumber(row.totalKg, lang)}</td>
-                                    <td className="px-4 py-2 text-right">{formatNumber(row.avgVolPerInvoice, lang)}</td>
-                                </tr>
-                                {row.isOthers && othersExpanded && othersData.map((sub, j) => (
-                                    <tr key={`sub-${j}`} className="border-b bg-gray-50/50 text-gray-500 text-xs">
-                                        <td className="px-4 py-1 pl-8 truncate">{sub.name}</td>
-                                        <td className="px-4 py-1 text-right">{formatCurrency(sub.totalRevenue, lang)}</td>
-                                        <td className="px-4 py-1 text-right">{formatCurrency(sub.profit, lang)}</td>
-                                        <td className="px-4 py-1 text-right">{sub.contribPct.toFixed(2)}%</td>
-                                        <td className="px-4 py-1 text-right">{sub.marginPct.toFixed(1)}%</td>
-                                        <td className="px-4 py-1 text-right">{formatNumber(sub.totalKg, lang)}</td>
-                                        <td className="px-4 py-1 text-right">{formatNumber(sub.avgVolPerInvoice, lang)}</td>
-                                    </tr>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                    </tbody></table></div>
-                    <InsightBox title={t.obs.customers} insights={insights} />
-                </div>
-            );
-        };
-
-        // 5. STRATEGIC ANALYSIS VIEW (Exact Replica)
-        const AnalysisView = ({ t, lang }) => {
-            const chart1Ref = useRef(null);
-            const chart2Ref = useRef(null);
-            const chart3Ref = useRef(null);
-
-            useEffect(() => {
-                const charts = [];
-                // Data from original HTML - UPDATED TO V4 from uploaded file
-                const datosMensuales = {
-                    2024: { 
-                        meses: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'], 
-                        precio: [298.35, 284.85, 295.42, 286.2, 290.14, 293.09, 289.25, 286.07, 286.11, 286.16, 292.19, 295.89], 
-                        costo: [116.64, 113.25, 113.31, 114.48, 114.74, 113.4, 113.38, 115.2, 113.02, 114.37, 116.05, 114.55] 
-                    },
-                    2025: { 
-                        precio: [304.86, 312.17, 311.82, 313.88, 326.22, 314.48, 327.47, 321.36, 321.65, 320.39, 321.45, 322.98], 
-                        costo: [177.56, 175.9, 177.71, 174.99, 176.75, 175.26, 175.47, 177.81, 175.93, 176.27, 178.46, 177.47] 
-                    }
-                };
-
-                // Chart 1
-                if (chart1Ref.current) {
-                    charts.push(new Chart(chart1Ref.current, {
-                        type: 'line',
-                        data: {
-                            labels: datosMensuales[2024].meses,
-                            datasets: [
-                                { label: 'Precio 2024', data: datosMensuales[2024].precio, borderColor: '#4169E1', backgroundColor: 'rgba(65, 105, 225, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 },
-                                { label: 'Costo 2024', data: datosMensuales[2024].costo, borderColor: '#fb8500', backgroundColor: 'rgba(251, 133, 0, 0.1)', borderWidth: 2, borderDash: [5, 5], tension: 0.4, fill: true, pointRadius: 0 },
-                                { label: 'Precio 2025', data: datosMensuales[2025].precio, borderColor: '#7b2cbf', backgroundColor: 'rgba(123, 44, 191, 0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0 },
-                                { label: 'Costo 2025', data: datosMensuales[2025].costo, borderColor: '#dc2626', backgroundColor: 'rgba(220, 38, 38, 0.1)', borderWidth: 3, borderDash: [5, 5], tension: 0.4, fill: true, pointRadius: 0 }
-                            ]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-                    }));
-                }
-
-                // Chart 2
-                if (chart2Ref.current) {
-                    charts.push(new Chart(chart2Ref.current, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Grano', 'Filtro', 'Espresso', 'Cold Brew'],
-                            datasets: [
-                                { label: '2024', data: [65.9, 63.8, 86.8, 86.9], backgroundColor: 'rgba(34, 197, 94, 0.7)' },
-                                { label: '2025', data: [45.6, 45.1, 45.8, 50.5], backgroundColor: 'rgba(220, 38, 38, 0.7)' }
-                            ]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-                    }));
-                }
-
-                return () => charts.forEach(c => c.destroy());
-            }, []);
-
-            return (
-                <div className="strat-view animate-fade-in">
-                    <div className="container-like">
-                        
-                        <div className="alert-banner"><h2>{t.strat.alertTitle}</h2><p>{t.strat.alertDesc}</p><p style={{fontSize:'1em',marginTop:'10px'}}>{t.strat.alertSub}</p></div>
-                        
-                        <div className="metrics-grid">
-                            <div className="metric-card purple"><div className="metric-label">{t.strat.kpi1}</div><div className="metric-value">$144.90</div><div className="metric-change negative">{t.strat.kpi1Sub}</div></div>
-                            <div className="metric-card red"><div className="metric-label">{t.strat.kpi2}</div><div className="metric-value">45.6%</div><div className="metric-change negative">{t.strat.kpi2Sub}</div></div>
-                            <div className="metric-card green"><div className="metric-label">{t.strat.kpi3}</div><div className="metric-value">$12.53M</div><div className="metric-change negative">{t.strat.kpi3Sub}</div></div>
-                            <div className="metric-card orange"><div className="metric-label">{t.strat.kpi4}</div><div className="metric-value">$4.39M</div><div className="metric-change negative">{t.strat.kpi4Sub}</div></div>
-                        </div>
-
-                        <MarginLostExplanation t={t} lang={lang} />
-
-                        <div className="chart-container"><div className="chart-title">{t.strat.chart1Title}</div><div className="chart-wrapper"><canvas ref={chart1Ref}></canvas></div><p className="text-xs text-center text-gray-400 mt-2">{t.strat.clickToHide}</p></div>
-                        
-                        <div className="insight-box"><h3>{t.strat.insightTitle}</h3><p>{t.strat.insightDesc}</p></div>
-
-                        <div className="table-container">
-                            <div className="chart-title">{t.strat.table1Title}</div>
-                            <table>
-                                <thead><tr><th>{t.table.concept}</th><th>{t.table.price}</th><th>{t.table.cost}</th><th>{t.table.marginAbs}</th><th>{t.table.marginPct}</th><th>{t.kpis.totalRevenue}</th></tr></thead>
-                                <tbody>
-                                    <tr><td><strong>2024</strong></td><td className="number">$290.61</td><td className="number">$114.45</td><td className="number positive-value">$176.16</td><td className="number positive-value">61.6%</td><td className="number">$22.1M</td></tr>
-                                    <tr className="highlight-row"><td><strong>2025</strong></td><td className="number">$317.83</td><td className="number">$176.66</td><td className="number">$141.17</td><td className="number negative-value">45.6%</td><td className="number">$27.5M</td></tr>
-                                    <tr><td><strong>{t.strat.change}</strong></td><td className="number positive-value">+9.4%</td><td className="number negative-value">+54.4%</td><td className="number negative-value">-19.9%</td><td className="number negative-value">-16.0 pts</td><td className="number positive-value">+24.6%</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <h2 className="section-title">{t.strat.chart2Title}</h2>
-                        <div className="chart-container"><div className="chart-wrapper"><canvas ref={chart2Ref}></canvas></div><p className="text-xs text-center text-gray-400 mt-2">{t.strat.clickToHide}</p></div>
-
-                        <div className="table-container">
-                            <div className="chart-title">{t.strat.table3Title}</div>
-                            <table>
-                                <thead><tr><th>{t.table.variety}</th><th>{t.table.sale}</th><th>{t.table.profit}</th><th>{t.table.margin24}</th><th>{t.table.margin25}</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Main Street</td><td className="number">$7.42M</td><td className="number">$3.31M</td><td className="number positive-value">61.2%</td><td className="number">44.6%</td></tr>
-                                    <tr><td>Maestrale</td><td className="number">$6.54M</td><td className="number">$3.05M</td><td className="number positive-value">62.4%</td><td className="number">46.7%</td></tr>
-                                    <tr><td>Mezcla Americano</td><td className="number">$2.43M</td><td className="number">$1.23M</td><td className="number positive-value">62.2%</td><td className="number positive-value">50.6%</td></tr>
-                                    <tr><td>HLT Blend</td><td className="number">$2.87M</td><td className="number">$1.09M</td><td className="number positive-value">56.8%</td><td className="number negative-value">37.9%</td></tr>
-                                    <tr><td>Alis</td><td className="number">$2.32M</td><td className="number">$1.03M</td><td className="number positive-value">58.5%</td><td className="number">44.4%</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="table-container">
-                            <div className="chart-title">{t.strat.table2Title}</div>
-                            <table>
-                                <thead><tr><th>{t.table.client}</th><th>{t.table.sale}</th><th>{t.table.marginAbs}</th><th>{t.table.marginPct}</th><th>{t.table.eval}</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Hilton / CONRAD - Tulum</td><td className="number">$3.23M</td><td className="number">$1.38M</td><td className="number">42.7%</td><td>🟡 Ajustar - Moderado +20%</td></tr>
-                                    <tr><td>Ojo de Agua - CEDIS CDMX</td><td className="number">$1.57M</td><td className="number">$869K</td><td className="number positive-value">55.3%</td><td>🟢 Excelente - Mantener</td></tr>
-                                    <tr><td>Sofitel CDMX</td><td className="number">$1.45M</td><td className="number">$833K</td><td className="number positive-value">57.3%</td><td>🟢 Excelente - Mantener</td></tr>
-                                    <tr><td>Hilton - Mar Caribe (All-In)</td><td className="number">$1.97M</td><td className="number">$827K</td><td className="number">42.0%</td><td>🟡 Ajustar - Moderado +20%</td></tr>
-                                    <tr><td>Hyatt - Mexico City</td><td className="number">$1.66M</td><td className="number">$774K</td><td className="number">46.7%</td><td>🟡 Ajustar - Leve +15%</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <h2 className="section-title">{t.strat.planTitle}</h2>
-                        <div className="priority-section priority-1">
-                            <div className="priority-header"><span className="priority-badge">{t.strat.p1}</span><h3>{t.strat.p1Title}</h3></div>
-                            <div className="action-item"><div className="action-number">1</div><div className="action-content"><h4>{t.strat.steps[0].t}</h4><p>{t.strat.steps[0].d}</p></div></div>
-                            <div className="action-item"><div className="action-number">2</div><div className="action-content"><h4>{t.strat.steps[1].t}</h4><ul>{t.strat.steps[1].l.map(x=><li key={x}>{x}</li>)}</ul></div></div>
-                            <div className="action-item"><div className="action-number">3</div><div className="action-content"><h4>{t.strat.steps[2].t}</h4><ul>{t.strat.steps[2].l.map(x=><li key={x}>{x}</li>)}</ul></div></div>
-                        </div>
-
-                        <div className="priority-section priority-2">
-                            <div className="priority-header"><span className="priority-badge">{t.strat.p2}</span><h3>{t.strat.p2Title}</h3></div>
-                            {[3,4,5].map(i=><div key={i} className="action-item"><div className="action-number">{i+1}</div><div className="action-content"><h4>{t.strat.steps[i].t}</h4><p>{t.strat.steps[i].d}</p></div></div>)}
-                        </div>
-
-                        <div className="priority-section priority-3">
-                            <div className="priority-header"><span className="priority-badge">{t.strat.p3}</span><h3>{t.strat.p3Title}</h3></div>
-                            {[6,7].map(i=><div key={i} className="action-item"><div className="action-number">{i+1}</div><div className="action-content"><h4>{t.strat.steps[i].t}</h4><p>{t.strat.steps[i].d}</p></div></div>)}
-                        </div>
-
-                        <div className="priority-section control">
-                            <div className="priority-header"><span className="priority-badge control-badge">{t.strat.ctrl}</span><h3>{t.strat.ctrlTitle}</h3></div>
-                            {[8,9].map(i=><div key={i} className="action-item"><div className="action-number">{i+1}</div><div className="action-content"><h4>{t.strat.steps[i].t}</h4><p>{t.strat.steps[i].d}</p></div></div>)}
-                        </div>
-
-                        <div className="timeline-section">
-                            <h3 style={{textAlign:'center',color:'#7b2cbf',marginBottom:'30px'}}>{t.strat.timelineTitle}</h3>
-                            <div className="timeline">
-                                <div className="timeline-item"><div className="timeline-marker week1-2">1</div><div className="timeline-content"><h4>{t.strat.time.prep} ({t.strat.time.w1})</h4><ul>{t.strat.time.l1.map(x=><li key={x}>{x}</li>)}</ul></div></div>
-                                <div className="timeline-item"><div className="timeline-content"><h4>{t.strat.time.exec} ({t.strat.time.w3})</h4><ul>{t.strat.time.l2.map(x=><li key={x}>{x}</li>)}</ul></div><div className="timeline-marker week3-4">2</div></div>
-                                <div className="timeline-item"><div className="timeline-marker month2">3</div><div className="timeline-content"><h4>{t.strat.time.imp} ({t.strat.time.m2})</h4><ul>{t.strat.time.l3.map(x=><li key={x}>{x}</li>)}</ul></div></div>
-                                <div className="timeline-item"><div className="timeline-content"><h4>{t.strat.time.eval} ({t.strat.time.m3})</h4><ul>{t.strat.time.l4.map(x=><li key={x}>{x}</li>)}</ul></div><div className="timeline-marker month3">4</div></div>
-                            </div>
-                        </div>
-
-                        <h2 className="section-title">{t.strat.marketProjTitle}</h2>
-                        <div className="insight-box" style={{background:'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', borderLeftColor:'#3b82f6'}}>
-                            <h3 style={{color:'#1e40af'}}>{t.strat.marketProjSub}</h3>
-                            <p style={{color:'#1e3a8a', marginBottom:'15px'}}><strong>{t.strat.marketContext.split(':')[0]}:</strong>{t.strat.marketContext.split(':')[1]}</p>
-                            
-                            {t.strat.marketSources.map((source, i) => (
-                                <div key={i} style={{background:'white', padding:'20px', borderRadius:'10px', margin:'15px 0'}}>
-                                    <h4 style={{color:'#1e40af', marginBottom:'12px', fontSize:'1.1em'}}>{source.name}</h4>
-                                    <ul style={{color:'#1e3a8a', lineHeight:'1.8', marginLeft:'20px', listStyleType:'disc'}}>
-                                        {source.items.map((item, j) => <li key={j} dangerouslySetInnerHTML={{__html: item.replace(/^([^:]+):/, '<strong>$1:</strong>')}} />)}
-                                    </ul>
-                                </div>
-                            ))}
-
-                            <div style={{background:'#fef3c7', padding:'20px', borderRadius:'10px', marginTop:'20px', borderLeft:'4px solid #f59e0b'}}>
-                                <h4 style={{color:'#92400e', marginBottom:'10px', fontSize:'1.1em'}}>{t.strat.marketConclTitle}</h4>
-                                <p style={{color:'#78350f', lineHeight:'1.7', margin:'0'}}>{t.strat.marketConclDesc}</p>
-                            </div>
-                        </div>
-
-                        <div className="final-warning"><h3>{t.strat.warnTitle}</h3><p>{t.strat.warnDesc}</p></div>
-                    </div>
                 </div>
             );
         };
