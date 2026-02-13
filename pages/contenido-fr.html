@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Margen - Dashboard Estratégico</title>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container-like {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Alert Banner - Estilo de la imagen */
+        .alert-banner {
+            background: white;
+            border: 3px solid #dc2626;
+            color: #1f2937;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .alert-banner h2 {
+            font-size: 1.8em;
+            margin-bottom: 12px;
+            font-weight: bold;
+            color: #dc2626;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-banner p {
+            font-size: 1.1em;
+            margin: 8px 0;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .alert-banner p:last-child {
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        /* Metrics Grid - Estilo de la imagen con bordes de colores */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid;
+            position: relative;
+        }
+
+        .metric-card.purple { border-left-color: #7b2cbf; }
+        .metric-card.red { border-left-color: #dc2626; }
+        .metric-card.green { border-left-color: #059669; }
+        .metric-card.orange { border-left-color: #ea580c; }
+
+        .metric-label {
+            font-size: 0.75em;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .metric-card.purple .metric-value { color: #7b2cbf; }
+        .metric-card.red .metric-value { color: #dc2626; }
+        .metric-card.green .metric-value { color: #059669; }
+        .metric-card.orange .metric-value { color: #ea580c; }
+
+        .metric-change {
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #dc2626;
+        }
+
+        /* Accordion "¿Cómo se calcula?" */
+        .accordion {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.05em;
+            color: #1e40af;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: #dbeafe;
+        }
+
+        .accordion-icon {
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .accordion-arrow {
+            margin-left: auto;
+            font-size: 1.2em;
+            transition: transform 0.3s;
+        }
+
+        .accordion.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            border-top: 1px solid #bfdbfe;
+        }
+
+        .accordion.open .accordion-content {
+            max-height: 1200px;
+        }
+
+        .accordion-inner {
+            padding: 30px;
+            background: white;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .explanation-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation-description {
+            color: #1e40af;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+
+        .calculation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .calculation-steps {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .step {
+            margin-bottom: 20px;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #d1d5db;
+            padding-bottom: 6px;
+        }
+
+        .step-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #6b7280;
+            padding: 8px 0;
+        }
+
+        .step:last-child .step-title {
+            color: #dc2626;
+            border-bottom-color: #fca5a5;
+        }
+
+        .step:last-child .step-content {
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .visual-comparison {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .comparison-bar {
+            margin-bottom: 15px;
+        }
+
+        .comparison-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        .bar-container {
+            width: 100%;
+            height: 32px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.6s ease;
+        }
+
+        .bar-fill.green {
+            background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+        }
+
+        .bar-fill.red {
+            background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+            position: relative;
+        }
+
+        .bar-gap {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                #f3f4f6,
+                #f3f4f6 10px,
+                #d1d5db 10px,
+                #d1d5db 20px
+            );
+            border-left: 2px dashed #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .breakdown-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .breakdown-icon {
+            width: 36px;
+            height: 36px;
+            background: #dbeafe;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .breakdown-value {
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 0.95em;
+        }
+
+        .final-note {
+            background: #dbeafe;
+            padding: 18px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+            font-size: 0.9em;
+            line-height: 1.6;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .highlight-row {
+            background-color: #fef3c7;
+            font-weight: 600;
+        }
+
+        .number {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .negative-value {
+            color: #dc2626;
+        }
+
+        .positive-value {
+            color: #059669;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #7b2cbf;
+            margin: 40px 0 20px 0;
+            font-weight: bold;
+            border-left: 5px solid #7b2cbf;
+            padding-left: 15px;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 5px solid #f59e0b;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .insight-box h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .insight-box p {
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        .priority-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid;
+        }
+
+        .priority-1 { 
+            border-left-color: #dc2626; 
+            background: linear-gradient(135deg, #ffffff 0%, #fee2e2 100%); 
+        }
+
+        .priority-2 { 
+            border-left-color: #ea580c; 
+            background: linear-gradient(135deg, #ffffff 0%, #ffedd5 100%); 
+        }
+
+        .priority-3 { 
+            border-left-color: #7b2cbf; 
+            background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%); 
+        }
+
+        .control { 
+            border-left-color: #059669; 
+            background: linear-gradient(135deg, #ffffff 0%, #d1fae5 100%); 
+        }
+
+        .priority-header { 
+            margin-bottom: 25px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+
+        .priority-badge {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .priority-2 .priority-badge { 
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); 
+        }
+
+        .priority-3 .priority-badge { 
+            background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); 
+        }
+
+        .control-badge { 
+            background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+        }
+
+        .action-item {
+            display: flex;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        .action-number {
+            min-width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .action-content h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .action-content p, .action-content ul {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .action-content ul {
+            margin-left: 20px;
+            margin-top: 5px;
+            list-style-type: disc;
+        }
+
+        .timeline-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #7b2cbf, #059669);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            grid-column: 1;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            grid-column: 3;
+            text-align: left;
+        }
+
+        .timeline-marker {
+            grid-column: 2;
+            background: white;
+            border: 4px solid;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .week1-2 { 
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); 
+            border-color: #dc2626; 
+        }
+
+        .week3-4 { 
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); 
+            border-color: #ea580c; 
+        }
+
+        .month2 { 
+            background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%); 
+            border-color: #7b2cbf; 
+        }
+
+        .month3 { 
+            background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+            border-color: #059669; 
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .timeline-content h4 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .timeline-content ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .final-warning {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 3px solid #dc2626;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .final-warning h3 {
+            color: #7f1d1d;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .final-warning p {
+            color: #7f1d1d;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .calculation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 40px;
+                transform: none;
+            }
+
+            .timeline-item {
+                grid-template-columns: 80px 1fr;
+                gap: 15px;
+            }
+
+            .timeline-item:nth-child(even) .timeline-content,
+            .timeline-item:nth-child(odd) .timeline-content {
+                grid-column: 2;
+                text-align: left;
+            }
+
+            .timeline-marker {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-like">
+        
+        <div class="alert-banner">
+            <h2>SITUACIÓN GENERAL</h2>
+            <p>Caída del margen: -15.98 puntos porcentuales</p>
+            <p>Margen actual 45.60% - Por debajo del umbral saludable de 50%</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card purple">
+                <div class="metric-label">MARGEN PROMEDIO POR KG 2025</div>
+                <div class="metric-value">$144.90</div>
+                <div class="metric-change">↓ $34.08 vs 2024</div>
+            </div>
+
+            <div class="metric-card red">
+                <div class="metric-label">% DE MARGEN GLOBAL 2025</div>
+                <div class="metric-value">45.6%</div>
+                <div class="metric-change">↓ -16.0 puntos</div>
+            </div>
+
+            <div class="metric-card green">
+                <div class="metric-label">BENEFICIO TOTAL 2025</div>
+                <div class="metric-value">$12.53M</div>
+                <div class="metric-change">↓ -7.6% vs 2024</div>
+            </div>
+
+            <div class="metric-card orange">
+                <div class="metric-label">MARGEN PERDIDO ANUAL</div>
+                <div class="metric-value">$4.39M</div>
+                <div class="metric-change">$366K por mes</div>
+            </div>
+        </div>
+
+        <div class="accordion" id="calculationAccordion">
+            <div class="accordion-header" onclick="toggleAccordion()">
+                <div class="accordion-icon">📊</div>
+                <span>¿Cómo se calcula?</span>
+                <div class="accordion-arrow">▼</div>
+            </div>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="explanation-title">
+                        💡 ¿De dónde sale el Margen Perdido de $4.39M?
+                    </div>
+                    <p class="explanation-description">
+                        El margen perdido responde a esta pregunta: Si hubieras mantenido el mismo % de margen que tenías en 2024, ¿cuánto dinero extra tendrías hoy?
+                    </p>
+
+                    <div class="calculation-grid">
+                        <div class="calculation-steps">
+                            <div class="step">
+                                <div class="step-title">PASO 1: Margen esperado</div>
+                                <div class="step-content">Ventas 2025 ($27.5M) × Margen 2024 (61.6%) = $16.92M</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-title">PASO 2: Margen real</div>
+                                <div class="step-content">Margen REAL 2025 = $12.53M</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-title">PASO 3: La diferencia</div>
+                                <div class="step-content">$16.92M - $12.53M = $4.39M</div>
+                            </div>
+                        </div>
+
+                        <div class="visual-comparison">
+                            <div class="comparison-bar">
+                                <div class="comparison-label">
+                                    <span>Margen esperado (61.6%)</span>
+                                    <span>$16.92M</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar-fill green" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            <div class="comparison-bar">
+                                <div class="comparison-label">
+                                    <span>Margen real (45.6%)</span>
+                                    <span>$12.53M</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar-fill red" style="width: 74%;"></div>
+                                    <div class="bar-gap" style="width: 26%;">
+                                        Diferencia: $4.39M
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="breakdown-item">
+                            <div class="breakdown-icon">📅</div>
+                            <div class="breakdown-value">Por mes: $366K</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-icon">📊</div>
+                            <div class="breakdown-value">Por trimestre: $1.10M</div>
+                        </div>
+                    </div>
+
+                    <div class="final-note">
+                        "Estas absorbiendo $4.39M de costos al año en lugar de transferirlos a lo que pagan los clientes."
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Evolución Precio vs Costo (Promedios Ponderados)</div>
+            <div class="chart-wrapper">
+                <canvas id="precioVsCostoChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="insight-box">
+            <h3>💡 Insight Clave</h3>
+            <p><strong>La brecha sigue siendo significativa:</strong> El costo del café subió +54.4% (de $114/kg a $177/kg), 
+            pero el precio de venta solo aumentó +9.4% (de $291/kg a $318/kg). Esta diferencia de ~45 puntos 
+            porcentuales sin trasladar está erosionando tu margen.</p>
+        </div>
+
+        <div class="table-container">
+            <div class="chart-title">Composición Beneficio vs Costo</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Precio Prom/KG</th>
+                        <th>Costo Prom/KG</th>
+                        <th>Margen/KG</th>
+                        <th>% Margen</th>
+                        <th>Ventas Totales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>2024</strong></td>
+                        <td class="number">$290.61</td>
+                        <td class="number">$114.45</td>
+                        <td class="number positive-value">$176.16</td>
+                        <td class="number positive-value">61.6%</td>
+                        <td class="number">$22.1M</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong>2025</strong></td>
+                        <td class="number">$317.83</td>
+                        <td class="number">$176.66</td>
+                        <td class="number">$141.17</td>
+                        <td class="number">45.6%</td>
+                        <td class="number">$27.5M</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cambio</strong></td>
+                        <td class="number positive-value">+9.4%</td>
+                        <td class="number negative-value">+54.4%</td>
+                        <td class="number negative-value">-19.9%</td>
+                        <td class="number negative-value">-16.0 pts</td>
+                        <td class="number positive-value">+24.6%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="section-title">Rentabilidad por Variedad de Mezcla</h2>
+
+        <div class="table-container">
+            <div class="chart-title">Top 5 Variedades por Beneficio Absoluto (2025)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variedad / Mezcla</th>
+                        <th>Ventas</th>
+                        <th>Beneficio $</th>
+                        <th>Margen 2024</th>
+                        <th>Margen 2025</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Main Street</td>
+                        <td class="number">$7.42M</td>
+                        <td class="number">$3.31M</td>
+                        <td class="number positive-value">61.2%</td>
+                        <td class="number">44.6%</td>
+                    </tr>
+                    <tr>
+                        <td>Maestrale</td>
+                        <td class="number">$6.54M</td>
+                        <td class="number">$3.05M</td>
+                        <td class="number positive-value">62.4%</td>
+                        <td class="number">46.7%</td>
+                    </tr>
+                    <tr>
+                        <td>Mezcla Americano</td>
+                        <td class="number">$2.43M</td>
+                        <td class="number">$1.23M</td>
+                        <td class="number positive-value">62.2%</td>
+                        <td class="number positive-value">50.6%</td>
+                    </tr>
+                    <tr>
+                        <td>HLT Blend</td>
+                        <td class="number">$2.87M</td>
+                        <td class="number">$1.09M</td>
+                        <td class="number positive-value">56.8%</td>
+                        <td class="number negative-value">37.9%</td>
+                    </tr>
+                    <tr>
+                        <td>Alis</td>
+                        <td class="number">$2.32M</td>
+                        <td class="number">$1.03M</td>
+                        <td class="number positive-value">58.5%</td>
+                        <td class="number">44.4%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <div class="chart-title">Top 5 Clientes por Margen Absoluto (2025)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Ventas</th>
+                        <th>Margen $</th>
+                        <th>Margen %</th>
+                        <th>Evaluación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hilton / CONRAD - Tulum</td>
+                        <td class="number">$3.23M</td>
+                        <td class="number">$1.38M</td>
+                        <td class="number">42.7%</td>
+                        <td>🟡 Ajustar - Moderado +20%</td>
+                    </tr>
+                    <tr>
+                        <td>Ojo de Agua - CEDIS CDMX</td>
+                        <td class="number">$1.57M</td>
+                        <td class="number">$869K</td>
+                        <td class="number positive-value">55.3%</td>
+                        <td>🟢 Excelente - Mantener</td>
+                    </tr>
+                    <tr>
+                        <td>Sofitel CDMX</td>
+                        <td class="number">$1.45M</td>
+                        <td class="number">$833K</td>
+                        <td class="number positive-value">57.3%</td>
+                        <td>🟢 Excelente - Mantener</td>
+                    </tr>
+                    <tr>
+                        <td>Hilton - Mar Caribe (All-In)</td>
+                        <td class="number">$1.97M</td>
+                        <td class="number">$827K</td>
+                        <td class="number">42.0%</td>
+                        <td>🟡 Ajustar - Moderado +20%</td>
+                    </tr>
+                    <tr>
+                        <td>Hyatt - Mexico City</td>
+                        <td class="number">$1.66M</td>
+                        <td class="number">$774K</td>
+                        <td class="number">46.7%</td>
+                        <td>🟡 Ajustar - Leve +15%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="section-title">Plan de Acción sugerido</h2>
+
+        <div class="priority-section priority-1">
+            <div class="priority-header">
+                <span class="priority-badge">PRIORIDAD 1</span>
+                <h3>Ajuste de Precios Inmediato (próximos 30 días)</h3>
+            </div>
+            <div class="action-item">
+                <div class="action-number">1</div>
+                <div class="action-content">
+                    <h4>Aumento base del 20-30%</h4>
+                    <p>Para recuperar el margen perdido. Con la mejora de costos, un aumento del 25% te llevaría a un margen cercano al 55%.</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-number">2</div>
+                <div class="action-content">
+                    <h4>Estrategia escalonada:</h4>
+                    <ul>
+                        <li><strong>Inmediato (+20%):</strong> A todos los clientes nuevos y renovaciones de contrato</li>
+                        <li><strong>30 días (+15%):</strong> A clientes con contratos flexibles</li>
+                        <li><strong>60-90 días (+10-15%):</strong> Negociación con clientes clave de largo plazo</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-number">3</div>
+                <div class="action-content">
+                    <h4>Segmentación por sensibilidad:</h4>
+                    <ul>
+                        <li><strong>Hoteles de lujo (+25-30%):</strong> Menor sensibilidad al precio, priorizan calidad</li>
+                        <li><strong>Restaurantes premium (+20-25%):</strong> Pueden trasladar parte al consumidor final</li>
+                        <li><strong>Clientes sensibles (+15-20%):</strong> Negociar con cautela</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="priority-section priority-2">
+            <div class="priority-header">
+                <span class="priority-badge">PRIORIDAD 2</span>
+                <h3>Negociación con Proveedores</h3>
+            </div>
+            <div class="action-item">
+                <div class="action-number">4</div>
+                <div class="action-content">
+                    <h4>Contratos a futuro</h4>
+                    <p>Fija precios del café a 6-12 meses para protegerte de más volatilidad.</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-number">5</div>
+                <div class="action-content">
+                    <h4>Descuentos por volumen</h4>
+                    <p>Con 25% más ventas, tienes poder de negociación. Busca 5-10% de descuento.</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-number">6</div>
+                <div class="action-content">
+                    <h4>Diversificación de proveedores</h4>
+                    <p>Ten al menos 2-3 proveedores para comparar precios y calidad.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="priority-section priority-3">
+            <div class="priority-header">
+                <span class="priority-badge">PRIORIDAD 3</span>
+                <h3>Optimización del Mix</h3>
+            </div>
+            <div class="action-item">
+                <div class="action-number">7</div>
+                <div class="action-content">
+                    <h4>Promover productos premium</h4>
+                    <p>Cold Brew mantiene el mejor margen (50.5%). Espresso también está bien (45.8%). Incentiva su compra.</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-number">8</div>
+                <div class="action-content">
+                    <h4>Revisar productos de margen medio</h4>
+                    <p>Grano (45.6%) y Filtro (45.1%) están en el límite. Considera aumentos de precio focalizados o promoción de alternativas premium.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="priority-section control">
+            <div class="priority-header">
+                <span class="priority-badge control-badge">CONTROL Y MONITOREO</span>
+                <h3>Sistema de Seguimiento Continuo</h3>
+            </div>
+            <div class="action-item">
+                <div class="action-number">9</div>
+                <div class="action-content">
+                    <h4>Dashboard semanal</h4>
+                    <p>Monitorea margen % cada semana. Si baja de 43%, alarma amarilla. Si baja de 40%, alarma roja.</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-number">10</div>
+                <div class="action-content">
+                    <h4>Cláusulas de ajuste automático</h4>
+                    <p>En todos los contratos nuevos: "Si el costo del café sube más de 20%, el precio se ajusta automáticamente en la misma proporción".</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-section">
+            <h3 style="text-align: center; color: #7b2cbf; margin-bottom: 30px;">📅 Timeline de Implementación</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker week1-2">Sem 1-2</div>
+                    <div class="timeline-content">
+                        <h4>Preparación</h4>
+                        <ul>
+                            <li>Preparar presentación explicando aumento de costos</li>
+                            <li>Segmentar clientes por sensibilidad al precio</li>
+                            <li>Actualizar contratos con cláusulas de ajuste</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker week3-4">Sem 3-4</div>
+                    <div class="timeline-content">
+                        <h4>Ejecución</h4>
+                        <ul>
+                            <li>Conversaciones con top 10 clientes</li>
+                            <li>Aplicar aumento a clientes nuevos</li>
+                            <li>Comunicado general</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker month2">Mes 2</div>
+                    <div class="timeline-content">
+                        <h4>Implementación</h4>
+                        <ul>
+                            <li>Aumentos escalonados por segmento</li>
+                            <li>Negociar con proveedores</li>
+                            <li>Monitorear pérdida de clientes (5-10%)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker month3">Mes 3</div>
+                    <div class="timeline-content">
+                        <h4>Evaluación</h4>
+                        <ul>
+                            <li>Evaluar resultados</li>
+                            <li>Ajustar estrategia</li>
+                            <li>Objetivo: Margen >55%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">📊 Proyecciones del Mercado de Café 2026-2027</h2>
+
+        <div class="insight-box" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left-color: #3b82f6;">
+            <h3 style="color: #1e40af;">📈 Análisis de Tendencias Internacionales</h3>
+            <p style="color: #1e3a8a; margin-bottom: 15px;">
+                <strong>Contexto de volatilidad:</strong> El mercado internacional del café presenta proyecciones divergentes 
+                para los próximos 12-24 meses, reflejando incertidumbre en factores climáticos, geopolíticos y de producción.
+            </p>
+            
+            <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                <h4 style="color: #1e40af; margin-bottom: 12px; font-size: 1.1em;">
+                    🏦 Banco Mundial (Octubre 2025)
+                    <a href="https://www.lanacion.com.co/analdex-advierte-caida-en-precio-del-cafe-en-2026/" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Fuente</a>
+                </h4>
+                <ul style="color: #1e3a8a; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>2026:</strong> Reducción estimada del 13% en precios de café arábica por recuperación de producción en Colombia</li>
+                    <li><strong>2027:</strong> Descenso adicional del 5%</li>
+                    <li><strong>Café Robusta:</strong> Aumento del 9% en 2025, pero caídas del 2% proyectadas para 2026-2027</li>
+                    <li><strong>Riesgos al alza:</strong> Interrupciones climáticas en Brasil y posibles aranceles de EE.UU.</li>
+                </ul>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                <h4 style="color: #1e40af; margin-bottom: 12px; font-size: 1.1em;">
+                    📊 WalletInvestor
+                    <a href="https://libertex.org/es/blog/cafe-prediccion" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Fuente</a>
+                </h4>
+                <ul style="color: #1e3a8a; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Tendencia alcista sostenida:</strong> Proyección de crecimiento progresivo del 10-15% anual</li>
+                    <li><strong>2026:</strong> Precios estimados de $110-122 MXN/kg</li>
+                    <li><strong>2027-2030:</strong> Continuación de trayectoria ascendente por demanda global estable y oferta limitada</li>
+                    <li><strong>Factores:</strong> Demanda internacional sostenida y expectativas de oferta limitada</li>
+                </ul>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                <h4 style="color: #1e40af; margin-bottom: 12px; font-size: 1.1em;">
+                    🏢 Rabobank (Noviembre 2025)
+                    <a href="https://www.bloomberglinea.com/mercados/las-abundantes-cosechas-aliviaran-precios-del-cacao-y-del-cafe-en-2026-segun-rabobank/" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Fuente</a>
+                </h4>
+                <ul style="color: #1e3a8a; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Estabilización en rango amplio:</strong> Precios del arábica entre $110-154 MXN/kg</li>
+                    <li><strong>Volatilidad esperada:</strong> Persistirá volatilidad a corto plazo por factores climáticos</li>
+                    <li><strong>Abundantes cosechas:</strong> Posible alivio de precios en 2026 por aumento de producción mundial</li>
+                    <li><strong>Advertencia:</strong> "La agricultura ya no juega con las reglas de oferta y demanda, sino geopolíticas"</li>
+                </ul>
+            </div>
+
+            <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #f59e0b;">
+                <h4 style="color: #92400e; margin-bottom: 10px; font-size: 1.1em;">⚡ Conclusión para SSC Gourmet</h4>
+                <p style="color: #78350f; line-height: 1.7; margin: 0;">
+                    <strong>El consenso indica volatilidad continua con dos escenarios principales:</strong> (1) Corrección 
+                    temporal del 10-15% si mejoran las cosechas brasileñas, o (2) Incrementos adicionales del 10-20% si 
+                    persisten factores climáticos adversos. Dado que tu costo actual está en $177 MXN/kg, un aumento del 
+                    10-20% te llevaría a un rango de $195-212 MXN/kg. <strong>Recomendación:</strong> Implementar ajustes de precios 
+                    preventivos ahora e incluir cláusulas de ajuste automático en contratos para protegerse de cualquier escenario.
+                </p>
+            </div>
+        </div>
+
+        <div class="final-warning">
+            <h3>⚠️ Consideraciones Importantes</h3>
+            <p>Un margen de 45.6% está cerca del límite saludable, pero cualquier aumento adicional de costos 
+            o pérdida de clientes clave podría poner el negocio en riesgo. <strong>Es mejor implementar 
+            ajustes preventivos ahora que esperar a una crisis.</strong> La volatilidad proyectada en el mercado 
+            internacional del café hace esencial contar con mecanismos de protección en la estrategia de precios.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Toggle accordion
+        function toggleAccordion() {
+            document.getElementById('calculationAccordion').classList.toggle('open');
+        }
+
+        // Datos actualizados con V4 (costos corregidos)
+        const datosMensuales = {
+            2024: {
+                meses: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                precio: [298.35, 284.85, 295.42, 286.2, 290.14, 293.09, 289.25, 286.07, 286.11, 286.16, 292.19, 295.89],
+                costo: [116.64, 113.25, 113.31, 114.48, 114.74, 113.4, 113.38, 115.2, 113.02, 114.37, 116.05, 114.55]
+            },
+            2025: {
+                meses: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                precio: [304.86, 312.17, 311.82, 313.88, 326.22, 314.48, 327.47, 321.36, 321.65, 320.39, 321.45, 322.98],
+                costo: [177.56, 175.9, 177.71, 174.99, 176.75, 175.26, 175.47, 177.81, 175.93, 176.27, 178.46, 177.47]
+            }
+        };
+
+        // Gráfico 1: Precio vs Costo
+        const ctx1 = document.getElementById('precioVsCostoChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: datosMensuales[2024].meses,
+                datasets: [
+                    {
+                        label: 'Precio 2024',
+                        data: datosMensuales[2024].precio,
+                        borderColor: '#9d4edd',
+                        backgroundColor: 'rgba(157, 78, 221, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Costo 2024',
+                        data: datosMensuales[2024].costo,
+                        borderColor: '#fb8500',
+                        backgroundColor: 'rgba(251, 133, 0, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Precio 2025',
+                        data: datosMensuales[2025].precio,
+                        borderColor: '#7b2cbf',
+                        backgroundColor: 'rgba(123, 44, 191, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Costo 2025',
+                        data: datosMensuales[2025].costo,
+                        borderColor: '#ea580c',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
