@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis de Margen - Dashboard Estratégico</title>
+    <title>Margin Analysis - Strategic Dashboard</title>
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -31,7 +31,7 @@
             margin: 0 auto;
         }
 
-        /* Alert Banner - Estilo de la imagen */
+        /* Alert Banner - Image style */
         .alert-banner {
             background: white;
             border: 3px solid #dc2626;
@@ -63,7 +63,7 @@
             color: #4b5563;
         }
 
-        /* Metrics Grid - Estilo de la imagen con bordes de colores */
+        /* Metrics Grid - Image style with colored borders */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -115,7 +115,7 @@
             color: #dc2626;
         }
 
-        /* Accordion "¿Cómo se calcula?" */
+        /* Accordion "How is it calculated?" */
         .accordion {
             background: #eff6ff;
             border: 2px solid #3b82f6;
@@ -713,73 +713,73 @@
     <div class="container-like">
         
         <div class="alert-banner">
-            <h2>SITUACIÓN GENERAL</h2>
-            <p>Caída del margen: -15.98 puntos porcentuales</p>
-            <p>Margen actual 45.60% - Por debajo del umbral saludable de 50%</p>
+            <h2>GENERAL SITUATION</h2>
+            <p>Margin decline: -15.98 percentage points</p>
+            <p>Current margin 45.60% - Below the healthy threshold of 50%</p>
         </div>
         
         <div class="metrics-grid">
             <div class="metric-card purple">
-                <div class="metric-label">MARGEN PROMEDIO POR KG 2025</div>
-                <div class="metric-value">$144.90</div>
-                <div class="metric-change">↓ $34.08 vs 2024</div>
+                <div class="metric-label">AVERAGE MARGIN PER KG 2025</div>
+                <div class="metric-value">$7.25</div>
+                <div class="metric-change">↓ $1.70 vs 2024</div>
             </div>
 
             <div class="metric-card red">
-                <div class="metric-label">% DE MARGEN GLOBAL 2025</div>
+                <div class="metric-label">OVERALL MARGIN % 2025</div>
                 <div class="metric-value">45.6%</div>
-                <div class="metric-change">↓ -16.0 puntos</div>
+                <div class="metric-change">↓ -16.0 points</div>
             </div>
 
             <div class="metric-card green">
-                <div class="metric-label">BENEFICIO TOTAL 2025</div>
-                <div class="metric-value">$12.53M</div>
+                <div class="metric-label">TOTAL PROFIT 2025</div>
+                <div class="metric-value">$626K</div>
                 <div class="metric-change">↓ -7.6% vs 2024</div>
             </div>
 
             <div class="metric-card orange">
-                <div class="metric-label">MARGEN PERDIDO ANUAL</div>
-                <div class="metric-value">$4.39M</div>
-                <div class="metric-change">$366K por mes</div>
+                <div class="metric-label">ANNUAL LOST MARGIN</div>
+                <div class="metric-value">$220K</div>
+                <div class="metric-change">$18.3K per month</div>
             </div>
         </div>
 
         <div class="accordion" id="calculationAccordion">
             <div class="accordion-header" onclick="toggleAccordion()">
                 <div class="accordion-icon">📊</div>
-                <span>¿Cómo se calcula?</span>
+                <span>How is it calculated?</span>
                 <div class="accordion-arrow">▼</div>
             </div>
             <div class="accordion-content">
                 <div class="accordion-inner">
                     <div class="explanation-title">
-                        💡 ¿De dónde sale el Margen Perdido de $4.39M?
+                        💡 Where does the Lost Margin of $220K come from?
                     </div>
                     <p class="explanation-description">
-                        El margen perdido responde a esta pregunta: Si hubieras mantenido el mismo % de margen que tenías en 2024, ¿cuánto dinero extra tendrías hoy?
+                        The lost margin answers this question: If you had maintained the same margin % as in 2024, how much extra money would you have today?
                     </p>
 
                     <div class="calculation-grid">
                         <div class="calculation-steps">
                             <div class="step">
-                                <div class="step-title">PASO 1: Margen esperado</div>
-                                <div class="step-content">Ventas 2025 ($27.5M) × Margen 2024 (61.6%) = $16.92M</div>
+                                <div class="step-title">STEP 1: Expected margin</div>
+                                <div class="step-content">2025 Sales ($1.38M) × 2024 Margin (61.6%) = $846K</div>
                             </div>
                             <div class="step">
-                                <div class="step-title">PASO 2: Margen real</div>
-                                <div class="step-content">Margen REAL 2025 = $12.53M</div>
+                                <div class="step-title">STEP 2: Actual margin</div>
+                                <div class="step-content">ACTUAL Margin 2025 = $626K</div>
                             </div>
                             <div class="step">
-                                <div class="step-title">PASO 3: La diferencia</div>
-                                <div class="step-content">$16.92M - $12.53M = $4.39M</div>
+                                <div class="step-title">STEP 3: The difference</div>
+                                <div class="step-content">$846K - $626K = $220K</div>
                             </div>
                         </div>
 
                         <div class="visual-comparison">
                             <div class="comparison-bar">
                                 <div class="comparison-label">
-                                    <span>Margen esperado (61.6%)</span>
-                                    <span>$16.92M</span>
+                                    <span>Expected margin (61.6%)</span>
+                                    <span>$846K</span>
                                 </div>
                                 <div class="bar-container">
                                     <div class="bar-fill green" style="width: 100%;"></div>
@@ -787,13 +787,13 @@
                             </div>
                             <div class="comparison-bar">
                                 <div class="comparison-label">
-                                    <span>Margen real (45.6%)</span>
-                                    <span>$12.53M</span>
+                                    <span>Actual margin (45.6%)</span>
+                                    <span>$626K</span>
                                 </div>
                                 <div class="bar-container">
                                     <div class="bar-fill red" style="width: 74%;"></div>
                                     <div class="bar-gap" style="width: 26%;">
-                                        Diferencia: $4.39M
+                                        Difference: $220K
                                     </div>
                                 </div>
                             </div>
@@ -803,67 +803,67 @@
                     <div class="breakdown-grid" style="grid-template-columns: repeat(2, 1fr);">
                         <div class="breakdown-item">
                             <div class="breakdown-icon">📅</div>
-                            <div class="breakdown-value">Por mes: $366K</div>
+                            <div class="breakdown-value">Per month: $18.3K</div>
                         </div>
                         <div class="breakdown-item">
                             <div class="breakdown-icon">📊</div>
-                            <div class="breakdown-value">Por trimestre: $1.10M</div>
+                            <div class="breakdown-value">Per quarter: $55K</div>
                         </div>
                     </div>
 
                     <div class="final-note">
-                        "Estas absorbiendo $4.39M de costos al año en lugar de transferirlos a lo que pagan los clientes."
+                        "You're absorbing $220K in costs per year instead of passing them on to what customers pay."
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="chart-container">
-            <div class="chart-title">Evolución Precio vs Costo (Promedios Ponderados)</div>
+            <div class="chart-title">Price vs Cost Evolution (Weighted Averages)</div>
             <div class="chart-wrapper">
                 <canvas id="precioVsCostoChart"></canvas>
             </div>
         </div>
         
         <div class="insight-box">
-            <h3>💡 Insight Clave</h3>
-            <p><strong>La brecha sigue siendo significativa:</strong> El costo del café subió +54.4% (de $114/kg a $177/kg), 
-            pero el precio de venta solo aumentó +9.4% (de $291/kg a $318/kg). Esta diferencia de ~45 puntos 
-            porcentuales sin trasladar está erosionando tu margen.</p>
+            <h3>💡 Key Insight</h3>
+            <p><strong>The gap remains significant:</strong> Coffee cost increased by +54.4% (from $5.72/kg to $8.83/kg), 
+            but the selling price only increased by +9.4% (from $14.53/kg to $15.89/kg). This ~45 percentage point 
+            difference that hasn't been passed on is eroding your margin.</p>
         </div>
 
         <div class="table-container">
-            <div class="chart-title">Composición Beneficio vs Costo</div>
+            <div class="chart-title">Profit vs Cost Composition</div>
             <table>
                 <thead>
                     <tr>
-                        <th>Concepto</th>
-                        <th>Precio Prom/KG</th>
-                        <th>Costo Prom/KG</th>
-                        <th>Margen/KG</th>
-                        <th>% Margen</th>
-                        <th>Ventas Totales</th>
+                        <th>Concept</th>
+                        <th>Avg Price/KG</th>
+                        <th>Avg Cost/KG</th>
+                        <th>Margin/KG</th>
+                        <th>% Margin</th>
+                        <th>Total Sales</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>2024</strong></td>
-                        <td class="number">$290.61</td>
-                        <td class="number">$114.45</td>
-                        <td class="number positive-value">$176.16</td>
+                        <td class="number">$14.53</td>
+                        <td class="number">$5.72</td>
+                        <td class="number positive-value">$8.81</td>
                         <td class="number positive-value">61.6%</td>
-                        <td class="number">$22.1M</td>
+                        <td class="number">$1.10M</td>
                     </tr>
                     <tr class="highlight-row">
                         <td><strong>2025</strong></td>
-                        <td class="number">$317.83</td>
-                        <td class="number">$176.66</td>
-                        <td class="number">$141.17</td>
+                        <td class="number">$15.89</td>
+                        <td class="number">$8.83</td>
+                        <td class="number">$7.06</td>
                         <td class="number">45.6%</td>
-                        <td class="number">$27.5M</td>
+                        <td class="number">$1.38M</td>
                     </tr>
                     <tr>
-                        <td><strong>Cambio</strong></td>
+                        <td><strong>Change</strong></td>
                         <td class="number positive-value">+9.4%</td>
                         <td class="number negative-value">+54.4%</td>
                         <td class="number negative-value">-19.9%</td>
@@ -874,53 +874,53 @@
             </table>
         </div>
 
-        <h2 class="section-title">Rentabilidad por Variedad de Mezcla</h2>
+        <h2 class="section-title">Profitability by Blend Variety</h2>
 
         <div class="table-container">
-            <div class="chart-title">Top 5 Variedades por Beneficio Absoluto (2025)</div>
+            <div class="chart-title">Top 5 Varieties by Absolute Profit (2025)</div>
             <table>
                 <thead>
                     <tr>
-                        <th>Variedad / Mezcla</th>
-                        <th>Ventas</th>
-                        <th>Beneficio $</th>
-                        <th>Margen 2024</th>
-                        <th>Margen 2025</th>
+                        <th>Variety / Blend</th>
+                        <th>Sales</th>
+                        <th>Profit $</th>
+                        <th>Margin 2024</th>
+                        <th>Margin 2025</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Main Street</td>
-                        <td class="number">$7.42M</td>
-                        <td class="number">$3.31M</td>
+                        <td class="number">$371K</td>
+                        <td class="number">$165K</td>
                         <td class="number positive-value">61.2%</td>
                         <td class="number">44.6%</td>
                     </tr>
                     <tr>
                         <td>Maestrale</td>
-                        <td class="number">$6.54M</td>
-                        <td class="number">$3.05M</td>
+                        <td class="number">$327K</td>
+                        <td class="number">$152K</td>
                         <td class="number positive-value">62.4%</td>
                         <td class="number">46.7%</td>
                     </tr>
                     <tr>
-                        <td>Mezcla Americano</td>
-                        <td class="number">$2.43M</td>
-                        <td class="number">$1.23M</td>
+                        <td>Americano Blend</td>
+                        <td class="number">$122K</td>
+                        <td class="number">$62K</td>
                         <td class="number positive-value">62.2%</td>
                         <td class="number positive-value">50.6%</td>
                     </tr>
                     <tr>
                         <td>HLT Blend</td>
-                        <td class="number">$2.87M</td>
-                        <td class="number">$1.09M</td>
+                        <td class="number">$144K</td>
+                        <td class="number">$55K</td>
                         <td class="number positive-value">56.8%</td>
                         <td class="number negative-value">37.9%</td>
                     </tr>
                     <tr>
                         <td>Alis</td>
-                        <td class="number">$2.32M</td>
-                        <td class="number">$1.03M</td>
+                        <td class="number">$116K</td>
+                        <td class="number">$52K</td>
                         <td class="number positive-value">58.5%</td>
                         <td class="number">44.4%</td>
                     </tr>
@@ -929,90 +929,90 @@
         </div>
 
         <div class="table-container">
-            <div class="chart-title">Top 5 Clientes por Margen Absoluto (2025)</div>
+            <div class="chart-title">Top 5 Clients by Absolute Margin (2025)</div>
             <table>
                 <thead>
                     <tr>
-                        <th>Cliente</th>
-                        <th>Ventas</th>
-                        <th>Margen $</th>
-                        <th>Margen %</th>
-                        <th>Evaluación</th>
+                        <th>Client</th>
+                        <th>Sales</th>
+                        <th>Margin $</th>
+                        <th>Margin %</th>
+                        <th>Assessment</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Hilton / CONRAD - Tulum</td>
-                        <td class="number">$3.23M</td>
-                        <td class="number">$1.38M</td>
+                        <td class="number">$161K</td>
+                        <td class="number">$69K</td>
                         <td class="number">42.7%</td>
-                        <td>🟡 Ajustar - Moderado +20%</td>
+                        <td>🟡 Adjust - Moderate +20%</td>
                     </tr>
                     <tr>
                         <td>Ojo de Agua - CEDIS CDMX</td>
-                        <td class="number">$1.57M</td>
-                        <td class="number">$869K</td>
+                        <td class="number">$79K</td>
+                        <td class="number">$43K</td>
                         <td class="number positive-value">55.3%</td>
-                        <td>🟢 Excelente - Mantener</td>
+                        <td>🟢 Excellent - Maintain</td>
                     </tr>
                     <tr>
                         <td>Sofitel CDMX</td>
-                        <td class="number">$1.45M</td>
-                        <td class="number">$833K</td>
+                        <td class="number">$73K</td>
+                        <td class="number">$42K</td>
                         <td class="number positive-value">57.3%</td>
-                        <td>🟢 Excelente - Mantener</td>
+                        <td>🟢 Excellent - Maintain</td>
                     </tr>
                     <tr>
                         <td>Hilton - Mar Caribe (All-In)</td>
-                        <td class="number">$1.97M</td>
-                        <td class="number">$827K</td>
+                        <td class="number">$99K</td>
+                        <td class="number">$41K</td>
                         <td class="number">42.0%</td>
-                        <td>🟡 Ajustar - Moderado +20%</td>
+                        <td>🟡 Adjust - Moderate +20%</td>
                     </tr>
                     <tr>
                         <td>Hyatt - Mexico City</td>
-                        <td class="number">$1.66M</td>
-                        <td class="number">$774K</td>
+                        <td class="number">$83K</td>
+                        <td class="number">$39K</td>
                         <td class="number">46.7%</td>
-                        <td>🟡 Ajustar - Leve +15%</td>
+                        <td>🟡 Adjust - Slight +15%</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <h2 class="section-title">Plan de Acción sugerido</h2>
+        <h2 class="section-title">Suggested Action Plan</h2>
 
         <div class="priority-section priority-1">
             <div class="priority-header">
-                <span class="priority-badge">PRIORIDAD 1</span>
-                <h3>Ajuste de Precios Inmediato (próximos 30 días)</h3>
+                <span class="priority-badge">PRIORITY 1</span>
+                <h3>Immediate Price Adjustment (next 30 days)</h3>
             </div>
             <div class="action-item">
                 <div class="action-number">1</div>
                 <div class="action-content">
-                    <h4>Aumento base del 20-30%</h4>
-                    <p>Para recuperar el margen perdido. Con la mejora de costos, un aumento del 25% te llevaría a un margen cercano al 55%.</p>
+                    <h4>Base increase of 20-30%</h4>
+                    <p>To recover lost margin. With cost improvements, a 25% increase would bring you to a margin close to 55%.</p>
                 </div>
             </div>
             <div class="action-item">
                 <div class="action-number">2</div>
                 <div class="action-content">
-                    <h4>Estrategia escalonada:</h4>
+                    <h4>Staggered strategy:</h4>
                     <ul>
-                        <li><strong>Inmediato (+20%):</strong> A todos los clientes nuevos y renovaciones de contrato</li>
-                        <li><strong>30 días (+15%):</strong> A clientes con contratos flexibles</li>
-                        <li><strong>60-90 días (+10-15%):</strong> Negociación con clientes clave de largo plazo</li>
+                        <li><strong>Immediate (+20%):</strong> To all new clients and contract renewals</li>
+                        <li><strong>30 days (+15%):</strong> To clients with flexible contracts</li>
+                        <li><strong>60-90 days (+10-15%):</strong> Negotiation with long-term key clients</li>
                     </ul>
                 </div>
             </div>
             <div class="action-item">
                 <div class="action-number">3</div>
                 <div class="action-content">
-                    <h4>Segmentación por sensibilidad:</h4>
+                    <h4>Segmentation by sensitivity:</h4>
                     <ul>
-                        <li><strong>Hoteles de lujo (+25-30%):</strong> Menor sensibilidad al precio, priorizan calidad</li>
-                        <li><strong>Restaurantes premium (+20-25%):</strong> Pueden trasladar parte al consumidor final</li>
-                        <li><strong>Clientes sensibles (+15-20%):</strong> Negociar con cautela</li>
+                        <li><strong>Luxury hotels (+25-30%):</strong> Lower price sensitivity, prioritize quality</li>
+                        <li><strong>Premium restaurants (+20-25%):</strong> Can pass part on to end consumer</li>
+                        <li><strong>Sensitive clients (+15-20%):</strong> Negotiate with caution</li>
                     </ul>
                 </div>
             </div>
@@ -1020,190 +1020,190 @@
 
         <div class="priority-section priority-2">
             <div class="priority-header">
-                <span class="priority-badge">PRIORIDAD 2</span>
-                <h3>Negociación con Proveedores</h3>
+                <span class="priority-badge">PRIORITY 2</span>
+                <h3>Supplier Negotiation</h3>
             </div>
             <div class="action-item">
                 <div class="action-number">4</div>
                 <div class="action-content">
-                    <h4>Contratos a futuro</h4>
-                    <p>Fija precios del café a 6-12 meses para protegerte de más volatilidad.</p>
+                    <h4>Futures contracts</h4>
+                    <p>Lock in coffee prices for 6-12 months to protect yourself from more volatility.</p>
                 </div>
             </div>
             <div class="action-item">
                 <div class="action-number">5</div>
                 <div class="action-content">
-                    <h4>Descuentos por volumen</h4>
-                    <p>Con 25% más ventas, tienes poder de negociación. Busca 5-10% de descuento.</p>
+                    <h4>Volume discounts</h4>
+                    <p>With 25% more sales, you have negotiating power. Seek 5-10% discount.</p>
                 </div>
             </div>
             <div class="action-item">
                 <div class="action-number">6</div>
                 <div class="action-content">
-                    <h4>Diversificación de proveedores</h4>
-                    <p>Ten al menos 2-3 proveedores para comparar precios y calidad.</p>
+                    <h4>Supplier diversification</h4>
+                    <p>Have at least 2-3 suppliers to compare prices and quality.</p>
                 </div>
             </div>
         </div>
 
         <div class="priority-section priority-3">
             <div class="priority-header">
-                <span class="priority-badge">PRIORIDAD 3</span>
-                <h3>Optimización del Mix</h3>
+                <span class="priority-badge">PRIORITY 3</span>
+                <h3>Mix Optimization</h3>
             </div>
             <div class="action-item">
                 <div class="action-number">7</div>
                 <div class="action-content">
-                    <h4>Promover productos premium</h4>
-                    <p>Cold Brew mantiene el mejor margen (50.5%). Espresso también está bien (45.8%). Incentiva su compra.</p>
+                    <h4>Promote premium products</h4>
+                    <p>Cold Brew maintains the best margin (50.5%). Espresso is also good (45.8%). Incentivize their purchase.</p>
                 </div>
             </div>
             <div class="action-item">
                 <div class="action-number">8</div>
                 <div class="action-content">
-                    <h4>Revisar productos de margen medio</h4>
-                    <p>Grano (45.6%) y Filtro (45.1%) están en el límite. Considera aumentos de precio focalizados o promoción de alternativas premium.</p>
+                    <h4>Review medium margin products</h4>
+                    <p>Whole Bean (45.6%) and Filter (45.1%) are at the limit. Consider targeted price increases or promotion of premium alternatives.</p>
                 </div>
             </div>
         </div>
 
         <div class="priority-section control">
             <div class="priority-header">
-                <span class="priority-badge control-badge">CONTROL Y MONITOREO</span>
-                <h3>Sistema de Seguimiento Continuo</h3>
+                <span class="priority-badge control-badge">CONTROL AND MONITORING</span>
+                <h3>Continuous Tracking System</h3>
             </div>
             <div class="action-item">
                 <div class="action-number">9</div>
                 <div class="action-content">
-                    <h4>Dashboard semanal</h4>
-                    <p>Monitorea margen % cada semana. Si baja de 43%, alarma amarilla. Si baja de 40%, alarma roja.</p>
+                    <h4>Weekly dashboard</h4>
+                    <p>Monitor margin % every week. If it drops below 43%, yellow alert. If it drops below 40%, red alert.</p>
                 </div>
             </div>
             <div class="action-item">
                 <div class="action-number">10</div>
                 <div class="action-content">
-                    <h4>Cláusulas de ajuste automático</h4>
-                    <p>En todos los contratos nuevos: "Si el costo del café sube más de 20%, el precio se ajusta automáticamente en la misma proporción".</p>
+                    <h4>Automatic adjustment clauses</h4>
+                    <p>In all new contracts: "If coffee cost increases by more than 20%, the price is automatically adjusted in the same proportion".</p>
                 </div>
             </div>
         </div>
 
         <div class="timeline-section">
-            <h3 style="text-align: center; color: #7b2cbf; margin-bottom: 30px;">📅 Timeline de Implementación</h3>
+            <h3 style="text-align: center; color: #7b2cbf; margin-bottom: 30px;">📅 Implementation Timeline</h3>
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="timeline-marker week1-2">Sem 1-2</div>
+                    <div class="timeline-marker week1-2">Week 1-2</div>
                     <div class="timeline-content">
-                        <h4>Preparación</h4>
+                        <h4>Preparation</h4>
                         <ul>
-                            <li>Preparar presentación explicando aumento de costos</li>
-                            <li>Segmentar clientes por sensibilidad al precio</li>
-                            <li>Actualizar contratos con cláusulas de ajuste</li>
+                            <li>Prepare presentation explaining cost increases</li>
+                            <li>Segment clients by price sensitivity</li>
+                            <li>Update contracts with adjustment clauses</li>
                         </ul>
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-marker week3-4">Sem 3-4</div>
+                    <div class="timeline-marker week3-4">Week 3-4</div>
                     <div class="timeline-content">
-                        <h4>Ejecución</h4>
+                        <h4>Execution</h4>
                         <ul>
-                            <li>Conversaciones con top 10 clientes</li>
-                            <li>Aplicar aumento a clientes nuevos</li>
-                            <li>Comunicado general</li>
+                            <li>Conversations with top 10 clients</li>
+                            <li>Apply increase to new clients</li>
+                            <li>General communication</li>
                         </ul>
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-marker month2">Mes 2</div>
+                    <div class="timeline-marker month2">Month 2</div>
                     <div class="timeline-content">
-                        <h4>Implementación</h4>
+                        <h4>Implementation</h4>
                         <ul>
-                            <li>Aumentos escalonados por segmento</li>
-                            <li>Negociar con proveedores</li>
-                            <li>Monitorear pérdida de clientes (5-10%)</li>
+                            <li>Staggered increases by segment</li>
+                            <li>Negotiate with suppliers</li>
+                            <li>Monitor customer loss (5-10%)</li>
                         </ul>
                     </div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-marker month3">Mes 3</div>
+                    <div class="timeline-marker month3">Month 3</div>
                     <div class="timeline-content">
-                        <h4>Evaluación</h4>
+                        <h4>Evaluation</h4>
                         <ul>
-                            <li>Evaluar resultados</li>
-                            <li>Ajustar estrategia</li>
-                            <li>Objetivo: Margen >55%</li>
+                            <li>Evaluate results</li>
+                            <li>Adjust strategy</li>
+                            <li>Target: Margin >55%</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <h2 class="section-title">📊 Proyecciones del Mercado de Café 2026-2027</h2>
+        <h2 class="section-title">📊 Coffee Market Projections 2026-2027</h2>
 
         <div class="insight-box" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left-color: #3b82f6;">
-            <h3 style="color: #1e40af;">📈 Análisis de Tendencias Internacionales</h3>
+            <h3 style="color: #1e40af;">📈 International Trends Analysis</h3>
             <p style="color: #1e3a8a; margin-bottom: 15px;">
-                <strong>Contexto de volatilidad:</strong> El mercado internacional del café presenta proyecciones divergentes 
-                para los próximos 12-24 meses, reflejando incertidumbre en factores climáticos, geopolíticos y de producción.
+                <strong>Context of volatility:</strong> The international coffee market presents divergent projections 
+                for the next 12-24 months, reflecting uncertainty in climatic, geopolitical and production factors.
             </p>
             
             <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
                 <h4 style="color: #1e40af; margin-bottom: 12px; font-size: 1.1em;">
-                    🏦 Banco Mundial (Octubre 2025)
-                    <a href="https://www.lanacion.com.co/analdex-advierte-caida-en-precio-del-cafe-en-2026/" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Fuente</a>
+                    🏦 World Bank (October 2025)
+                    <a href="https://www.lanacion.com.co/analdex-advierte-caida-en-precio-del-cafe-en-2026/" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Source</a>
                 </h4>
                 <ul style="color: #1e3a8a; line-height: 1.8; margin-left: 20px;">
-                    <li><strong>2026:</strong> Reducción estimada del 13% en precios de café arábica por recuperación de producción en Colombia</li>
-                    <li><strong>2027:</strong> Descenso adicional del 5%</li>
-                    <li><strong>Café Robusta:</strong> Aumento del 9% en 2025, pero caídas del 2% proyectadas para 2026-2027</li>
-                    <li><strong>Riesgos al alza:</strong> Interrupciones climáticas en Brasil y posibles aranceles de EE.UU.</li>
+                    <li><strong>2026:</strong> Estimated 13% reduction in arabica coffee prices due to production recovery in Colombia</li>
+                    <li><strong>2027:</strong> Additional 5% decrease</li>
+                    <li><strong>Robusta Coffee:</strong> 9% increase in 2025, but 2% drops projected for 2026-2027</li>
+                    <li><strong>Upside risks:</strong> Weather disruptions in Brazil and potential U.S. tariffs</li>
                 </ul>
             </div>
 
             <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
                 <h4 style="color: #1e40af; margin-bottom: 12px; font-size: 1.1em;">
                     📊 WalletInvestor
-                    <a href="https://libertex.org/es/blog/cafe-prediccion" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Fuente</a>
+                    <a href="https://libertex.org/es/blog/cafe-prediccion" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Source</a>
                 </h4>
                 <ul style="color: #1e3a8a; line-height: 1.8; margin-left: 20px;">
-                    <li><strong>Tendencia alcista sostenida:</strong> Proyección de crecimiento progresivo del 10-15% anual</li>
-                    <li><strong>2026:</strong> Precios estimados de $110-122 MXN/kg</li>
-                    <li><strong>2027-2030:</strong> Continuación de trayectoria ascendente por demanda global estable y oferta limitada</li>
-                    <li><strong>Factores:</strong> Demanda internacional sostenida y expectativas de oferta limitada</li>
+                    <li><strong>Sustained upward trend:</strong> Projection of progressive growth of 10-15% annually</li>
+                    <li><strong>2026:</strong> Estimated prices of $5.50-6.10/kg</li>
+                    <li><strong>2027-2030:</strong> Continuation of upward trajectory due to stable global demand and limited supply</li>
+                    <li><strong>Factors:</strong> Sustained international demand and expectations of limited supply</li>
                 </ul>
             </div>
 
             <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
                 <h4 style="color: #1e40af; margin-bottom: 12px; font-size: 1.1em;">
-                    🏢 Rabobank (Noviembre 2025)
-                    <a href="https://www.bloomberglinea.com/mercados/las-abundantes-cosechas-aliviaran-precios-del-cacao-y-del-cafe-en-2026-segun-rabobank/" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Fuente</a>
+                    🏢 Rabobank (November 2025)
+                    <a href="https://www.bloomberglinea.com/mercados/las-abundantes-cosechas-aliviaran-precios-del-cacao-y-del-cafe-en-2026-segun-rabobank/" target="_blank" style="font-size: 0.75em; color: #3b82f6; text-decoration: none; margin-left: 8px;">📎 Source</a>
                 </h4>
                 <ul style="color: #1e3a8a; line-height: 1.8; margin-left: 20px;">
-                    <li><strong>Estabilización en rango amplio:</strong> Precios del arábica entre $110-154 MXN/kg</li>
-                    <li><strong>Volatilidad esperada:</strong> Persistirá volatilidad a corto plazo por factores climáticos</li>
-                    <li><strong>Abundantes cosechas:</strong> Posible alivio de precios en 2026 por aumento de producción mundial</li>
-                    <li><strong>Advertencia:</strong> "La agricultura ya no juega con las reglas de oferta y demanda, sino geopolíticas"</li>
+                    <li><strong>Stabilization in wide range:</strong> Arabica prices between $5.50-7.70/kg</li>
+                    <li><strong>Expected volatility:</strong> Short-term volatility will persist due to climatic factors</li>
+                    <li><strong>Abundant harvests:</strong> Possible price relief in 2026 due to increased global production</li>
+                    <li><strong>Warning:</strong> "Agriculture no longer plays by the rules of supply and demand, but geopolitics"</li>
                 </ul>
             </div>
 
             <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #f59e0b;">
-                <h4 style="color: #92400e; margin-bottom: 10px; font-size: 1.1em;">⚡ Conclusión para SSC Gourmet</h4>
+                <h4 style="color: #92400e; margin-bottom: 10px; font-size: 1.1em;">⚡ Conclusion for SSC Gourmet</h4>
                 <p style="color: #78350f; line-height: 1.7; margin: 0;">
-                    <strong>El consenso indica volatilidad continua con dos escenarios principales:</strong> (1) Corrección 
-                    temporal del 10-15% si mejoran las cosechas brasileñas, o (2) Incrementos adicionales del 10-20% si 
-                    persisten factores climáticos adversos. Dado que tu costo actual está en $177 MXN/kg, un aumento del 
-                    10-20% te llevaría a un rango de $195-212 MXN/kg. <strong>Recomendación:</strong> Implementar ajustes de precios 
-                    preventivos ahora e incluir cláusulas de ajuste automático en contratos para protegerse de cualquier escenario.
+                    <strong>The consensus indicates continued volatility with two main scenarios:</strong> (1) Temporary 
+                    correction of 10-15% if Brazilian harvests improve, or (2) Additional increases of 10-20% if 
+                    adverse climate factors persist. Since your current cost is $8.85/kg, a 10-20% increase would 
+                    take you to a range of $9.75-10.60/kg. <strong>Recommendation:</strong> Implement preventive price 
+                    adjustments now and include automatic adjustment clauses in contracts to protect against any scenario.
                 </p>
             </div>
         </div>
 
         <div class="final-warning">
-            <h3>⚠️ Consideraciones Importantes</h3>
-            <p>Un margen de 45.6% está cerca del límite saludable, pero cualquier aumento adicional de costos 
-            o pérdida de clientes clave podría poner el negocio en riesgo. <strong>Es mejor implementar 
-            ajustes preventivos ahora que esperar a una crisis.</strong> La volatilidad proyectada en el mercado 
-            internacional del café hace esencial contar con mecanismos de protección en la estrategia de precios.</p>
+            <h3>⚠️ Important Considerations</h3>
+            <p>A 45.6% margin is close to the healthy limit, but any additional cost increase 
+            or loss of key clients could put the business at risk. <strong>It's better to implement 
+            preventive adjustments now than wait for a crisis.</strong> The projected volatility in the 
+            international coffee market makes it essential to have protection mechanisms in the pricing strategy.</p>
         </div>
 
     </div>
@@ -1214,21 +1214,21 @@
             document.getElementById('calculationAccordion').classList.toggle('open');
         }
 
-        // Datos actualizados con V4 (costos corregidos)
+        // Data updated with V4 (corrected costs) - converted to USD at 20 MXN = 1 USD
         const datosMensuales = {
             2024: {
-                meses: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                precio: [298.35, 284.85, 295.42, 286.2, 290.14, 293.09, 289.25, 286.07, 286.11, 286.16, 292.19, 295.89],
-                costo: [116.64, 113.25, 113.31, 114.48, 114.74, 113.4, 113.38, 115.2, 113.02, 114.37, 116.05, 114.55]
+                meses: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                precio: [14.92, 14.24, 14.77, 14.31, 14.51, 14.65, 14.46, 14.30, 14.31, 14.31, 14.61, 14.79],
+                costo: [5.83, 5.66, 5.67, 5.72, 5.74, 5.67, 5.67, 5.76, 5.65, 5.72, 5.80, 5.73]
             },
             2025: {
-                meses: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                precio: [304.86, 312.17, 311.82, 313.88, 326.22, 314.48, 327.47, 321.36, 321.65, 320.39, 321.45, 322.98],
-                costo: [177.56, 175.9, 177.71, 174.99, 176.75, 175.26, 175.47, 177.81, 175.93, 176.27, 178.46, 177.47]
+                meses: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                precio: [15.24, 15.61, 15.59, 15.69, 16.31, 15.72, 16.37, 16.07, 16.08, 16.02, 16.07, 16.15],
+                costo: [8.88, 8.80, 8.89, 8.75, 8.84, 8.76, 8.77, 8.89, 8.80, 8.81, 8.92, 8.87]
             }
         };
 
-        // Gráfico 1: Precio vs Costo
+        // Chart 1: Price vs Cost
         const ctx1 = document.getElementById('precioVsCostoChart').getContext('2d');
         new Chart(ctx1, {
             type: 'line',
@@ -1236,7 +1236,7 @@
                 labels: datosMensuales[2024].meses,
                 datasets: [
                     {
-                        label: 'Precio 2024',
+                        label: 'Price 2024',
                         data: datosMensuales[2024].precio,
                         borderColor: '#9d4edd',
                         backgroundColor: 'rgba(157, 78, 221, 0.1)',
@@ -1246,7 +1246,7 @@
                         pointRadius: 0
                     },
                     {
-                        label: 'Costo 2024',
+                        label: 'Cost 2024',
                         data: datosMensuales[2024].costo,
                         borderColor: '#fb8500',
                         backgroundColor: 'rgba(251, 133, 0, 0.1)',
@@ -1257,7 +1257,7 @@
                         pointRadius: 0
                     },
                     {
-                        label: 'Precio 2025',
+                        label: 'Price 2025',
                         data: datosMensuales[2025].precio,
                         borderColor: '#7b2cbf',
                         backgroundColor: 'rgba(123, 44, 191, 0.1)',
@@ -1267,7 +1267,7 @@
                         pointRadius: 0
                     },
                     {
-                        label: 'Costo 2025',
+                        label: 'Cost 2025',
                         data: datosMensuales[2025].costo,
                         borderColor: '#ea580c',
                         backgroundColor: 'rgba(234, 88, 12, 0.1)',
